@@ -1,9 +1,10 @@
 
 import { Component, OnInit } from '@angular/core';
-import { CroisementService, StandService, MailService, ConfigService, ExcelService, BenevoleService } from '../../services';
+import { CroisementService, EvenementService, StandService, MailService, ConfigService, ExcelService, BenevoleService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Benevole, Email, Config } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
+import { TransmissionService } from 'src/app/services/transmission.service';
 
 
 
@@ -22,8 +23,8 @@ export class GestionComponent implements OnInit {
   benevolesToChange: Benevole[];
   dateRappel: string;
   mail: boolean;
-  theCheckbox:any
-  selectedDeviceObj:any
+  theCheckbox: any
+  selectedDeviceObj: any
   emailInfo: Email = {
     to: "",
     subject: "",
@@ -44,11 +45,14 @@ export class GestionComponent implements OnInit {
     name: 'Les inscrits SANS choix',
   }]
 
-  organumber:number;
+  organumber: number;
+
 
   constructor(
     public route: ActivatedRoute,
     public router: Router,
+    public evenementService: EvenementService,
+    public transmissionService: TransmissionService,
     public benevoleService: BenevoleService,
     public configService: ConfigService,
     public croisementService: CroisementService,
@@ -68,6 +72,7 @@ export class GestionComponent implements OnInit {
     }
 
 
+
     this.rappel = false;
     this.mail = false;
     this.mailingList = [];
@@ -79,18 +84,31 @@ export class GestionComponent implements OnInit {
     this.getText();
     this.getDateRappel();
     this.getBenevoles();
+    this.getEvenement();
+
+
   }
 
 
+  getEvenement() {
+    this.evenementService.getById(this.organumber).subscribe(data => {
+      console.log(data);
+      this.transmissionService.dataTransmission(data);
+    }, err => {
+      console.log(err);
+      this.router.navigate(['error']);
+    })
+  }
+
   exportAsXLSX(): void {
 
-    this.standService.getAll().subscribe(data => {
+    this.standService.getAll(this.organumber).subscribe(data => {
       console.log(data)
 
       let stands = new Array;
-      data['stands'].forEach(stand => {
+      data.forEach(stand => {
         let standLite = {
-          nom: String,
+          nom: "",
           creneaux: []
         };
         standLite.nom = stand.nom;
@@ -99,12 +117,12 @@ export class GestionComponent implements OnInit {
         for (let indexR = 0; indexR < 100; indexR++) {
           let creneau = {};
 
-          stand.Croisements.sort(function (a, b) { return a.Creneau.ordre - b.Creneau.ordre; })
-          for (let index = 0; index < stand.Croisements.length; index++) {
-            const croisement = stand.Croisements[index];
-            creneau[croisement.Creneau.plage] = "";
-            if (croisement.Benevoles[indexR]) {
-              creneau[croisement.Creneau.plage] = croisement.Benevoles[indexR].nom + " " + croisement.Benevoles[indexR].prenom;
+          stand.croisements.sort(function (a, b) { return a.creneau.ordre - b.creneau.ordre; })
+          for (let index = 0; index < stand.croisements.length; index++) {
+            const croisement = stand.croisements[index];
+            creneau[croisement.creneau.plage] = "";
+            if (croisement.benevoles[indexR]) {
+              creneau[croisement.creneau.plage] = croisement.benevoles[indexR].nom + " " + croisement.benevoles[indexR].prenom;
             }
           }
           standLite.creneaux.push(creneau);
@@ -124,8 +142,8 @@ export class GestionComponent implements OnInit {
   }
 
   getDateRappel() {
-    this.configService.getParam("dateRappel").subscribe(res => {
-      this.dateRappel = res['param'].value;
+    this.configService.getParam("dateRappel", this.organumber).subscribe(data => {
+      this.dateRappel = data.value;
     }, err => {
       console.log(err);
     });
@@ -147,9 +165,9 @@ export class GestionComponent implements OnInit {
   }
 
   getBlocage() {
-    this.configService.getParam("lock").subscribe(res => {
-      console.log(res['param'].value);
-      this.bloque = res['param'].value;
+    this.configService.getParam("lock", this.organumber).subscribe(data => {
+      console.log(data);
+      this.bloque = data.value;
     }, err => {
       console.log(err);
     });
@@ -192,9 +210,9 @@ export class GestionComponent implements OnInit {
   getBenevoles(): void {
     console.log("getBenevoles")
 
-    this.benevoleService.getAll().subscribe(data => {
+    this.benevoleService.getAll(this.organumber).subscribe(data => {
       console.log(data)
-      this.benevoles = data['benevoles'];
+      this.benevoles = data;
       this.getBenevolesWithChoice(this.benevoles);
       this.getBenevolesWithoutChoice(this.benevoles);
       this.getBenevolesToChange(this.benevoles);
@@ -207,7 +225,7 @@ export class GestionComponent implements OnInit {
   getBenevolesWithChoice(benevoles: Benevole[]) {
 
     benevoles.forEach(benevole => {
-      if (benevole.Croisements.length > 0) {
+      if (benevole.croisements.length > 0) {
         this.benevolesWithChoice.push(benevole);
       }
     });
@@ -215,7 +233,7 @@ export class GestionComponent implements OnInit {
   }
   getBenevolesWithoutChoice(benevoles: Benevole[]) {
     benevoles.forEach(benevole => {
-      if (benevole.Croisements.length == 0) {
+      if (benevole.croisements.length == 0) {
         this.benevolesWithoutChoice.push(benevole);
       }
     });
@@ -223,9 +241,9 @@ export class GestionComponent implements OnInit {
   }
   getBenevolesToChange(benevoles: Benevole[]) {
     benevoles.forEach(benevole => {
-      if (benevole.Croisements) {
-        benevole.Croisements.forEach(croisement => {
-          if (croisement.Stand.etat == 1 || croisement.Stand.etat == 3) {
+      if (benevole.croisements) {
+        benevole.croisements.forEach(croisement => {
+          if (croisement.stand.etat == 1 || croisement.stand.etat == 3) {
             this.benevolesToChange.push(benevole);
           }
         });
@@ -237,13 +255,13 @@ export class GestionComponent implements OnInit {
   getText() {
     this.emailInfo.subject = 'Infos pratique';
 
-    this.configService.getParam("rappel1").subscribe(res => {
+    this.configService.getParam("rappel1", this.organumber).subscribe(data => {
 
-      this.emailInfo.text = res['param'].value;
+      this.emailInfo.text = data.value;
 
-      this.configService.getParam("rappel2").subscribe(res => {
+      this.configService.getParam("rappel2", this.organumber).subscribe(res => {
 
-        this.emailInfo.text = this.emailInfo.text + res['param'].value;
+        this.emailInfo.text = this.emailInfo.text + data.value;
       }, err => {
         console.log(err);
       });
@@ -270,9 +288,9 @@ export class GestionComponent implements OnInit {
       emailCopy.to = benevole.email
       if (this.rappel) {
         emailCopy.text = emailCopy.text + "<br><br>N'oubliez pas que vous vous êtes inscrit en tant que bénévole pour:<br>";
-        benevole.Croisements.sort((a, b) => (a.Creneau.ordre > b.Creneau.ordre) ? 1 : ((b.Creneau.ordre > a.Creneau.ordre) ? -1 : 0));
-        benevole.Croisements.forEach(croisement => {
-          emailCopy.text = emailCopy.text + (croisement.Stand.nom == "tous" ? "N'importe quel stand" : croisement.Stand.nom) + " - " + croisement.Creneau.plage + "<br>"
+        benevole.croisements.sort((a, b) => (a.creneau.ordre > b.creneau.ordre) ? 1 : ((b.creneau.ordre > a.creneau.ordre) ? -1 : 0));
+        benevole.croisements.forEach(croisement => {
+          emailCopy.text = emailCopy.text + (croisement.stand.nom == "tous" ? "N'importe quel stand" : croisement.stand.nom) + " - " + croisement.creneau.plage + "<br>"
         })
         if (benevole.gateaux) {
           emailCopy.text = emailCopy.text + "<br>Vous avez également proposé d'apporter :<br>"

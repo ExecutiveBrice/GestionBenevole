@@ -4,9 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule} from "../app-routing.module";
 import { FormsModule} from "@angular/forms";
 import { OrderByPipe} from "../sort.pipe";
-import { UserService, CroisementService, BenevoleService, StandService, MailService, ConfigService, ExcelService, CreneauService, SMSService} from "../services";
-import { LoginComponent} from "../pages/login/login.component";
-import { SignupComponent} from "../pages/signup/signup.component";
+import { TransmissionService, CroisementService, EvenementService, BenevoleService, StandService, MailService, ConfigService, ExcelService, CreneauService, SMSService} from "../services";
 
 import { ErrorComponent, InscriptionComponent, ConnexionComponent, GestionComponent, CreationComponent, GestionStandsComponent, GestionMajStandsComponent, GestionMajConfigComponent, GestionBenevolesComponent, GestionMajCreneauxComponent, GestionSMSComponent} from "../pages";
 
@@ -25,7 +23,6 @@ import { Ng2ImgMaxModule } from 'ng2-img-max';
     AppRoutingModule
   ],
   providers: [
-    UserService,
     CroisementService,
     BenevoleService,
     StandService,
@@ -33,11 +30,11 @@ import { Ng2ImgMaxModule } from 'ng2-img-max';
     ConfigService,
     ExcelService,
     CreneauService,
-    SMSService
+    SMSService,
+    EvenementService,
+    TransmissionService
   ],
   declarations: [
-    LoginComponent,
-    SignupComponent,
     CreationComponent,
     InscriptionComponent, ConnexionComponent,
     GestionComponent,

@@ -1,10 +1,11 @@
 
 import { Component, OnInit } from '@angular/core';
-import { BenevoleService } from '../../services';
+import { BenevoleService, EvenementService } from '../../services';
 import { CroisementService, StandService, MailService, ConfigService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Benevole, Evenement } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
+import { TransmissionService } from 'src/app/services/transmission.service';
 
 @Component({
   selector: 'app-connexion',
@@ -20,10 +21,12 @@ export class ConnexionComponent implements OnInit {
   nouveau: boolean;
   exist: boolean;
   benevole: Benevole;
-  evenement:Evenement
+  evenement: Evenement
 
   constructor(public benevoleService: BenevoleService,
+    public evenementService: EvenementService,
     public route: ActivatedRoute,
+    public transmissionService: TransmissionService,
     public router: Router,
     public configService: ConfigService,
     public croisementService: CroisementService,
@@ -45,14 +48,30 @@ export class ConnexionComponent implements OnInit {
     this.nouveau = false;
     this.new = true;
     this.bloquage();
+    this.getEvenement();
+
+
   }
 
+
+  getEvenement() {
+    this.evenementService.getById(this.organumber).subscribe(data => {
+        console.log(data);
+        this.evenement = data;
+        this.transmissionService.dataTransmission(this.evenement);
+    }, err => {
+        console.log(err);
+        this.router.navigate(['error']);
+    });
+}
+
+
   bloquage() {
-    this.configService.getParam('lock')
-      .subscribe(res => {
+    this.configService.getParam('lock', this.organumber)
+      .subscribe(data => {
         console.log("lock");
-        console.log(res['param'].value);
-        if (res['param'].value == "true") {
+        console.log(data.value);
+        if (data.value == "true") {
           this.router.navigate(['/404']);
         }
       }, err => {
@@ -65,15 +84,20 @@ export class ConnexionComponent implements OnInit {
     console.log("find")
     console.log(this.benevole)
     this.benevole.email = this.benevole.email.toLowerCase();
-    this.benevoleService.getByMailLite(this.benevole.email).subscribe(data => {
+    this.benevoleService.getByMail(this.benevole.email, this.organumber).subscribe(data => {
       console.log("data")
       console.log(data)
-
-      localStorage.setItem('user', JSON.stringify(data));
-    },
-      error => {
+      if (data == null) {
         this.exist = false
         this.new = false;
+      } else {
+        localStorage.setItem('user', JSON.stringify(data));
+        this.router.navigate(['/inscription/'+ this.organumber ]);
+      }
+
+    },
+      error => {
+
         console.log('😢 Oh no!', error);
       });
   }
@@ -82,13 +106,13 @@ export class ConnexionComponent implements OnInit {
   subscribe(): void {
     this.nouveau = false;
     console.log("subscribe")
+    this.benevole.evenement = this.evenement;
     this.benevole.email = this.benevole.email.toLowerCase();
     this.benevoleService.add(this.benevole).subscribe(data => {
       console.log("data")
       console.log(data)
-      this.benevole.id = data['benevole'];
-      this.benevole.Croisements = [];
-      this.exist = true;
+      localStorage.setItem('user', JSON.stringify(data))
+      this.router.navigate(['/inscription/'+ this.organumber ]);
 
     },
       error => {
@@ -98,22 +122,5 @@ export class ConnexionComponent implements OnInit {
       });
   }
 
-
-  update(): void {
-    console.log("update")
-    console.log(this.benevole)
-    this.benevole.email = this.benevole.email.toLowerCase();
-    this.benevoleService.update(this.benevole).subscribe(data => {
-      console.log("data")
-      console.log(data)
-      this.exist = true;
-
-    },
-      error => {
-        this.exist = false;
-        this.new = false;
-        console.log('😢 Oh no!', error);
-      });
-  }
 
 }

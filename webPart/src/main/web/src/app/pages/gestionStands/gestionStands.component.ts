@@ -1,7 +1,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { BenevoleService } from '../../services';
-import { CroisementService, StandService, MailService } from '../../services';
+import { TransmissionService, CroisementService, StandService, MailService, EvenementService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Stand } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -21,8 +21,10 @@ export class GestionStandsComponent implements OnInit {
   constructor(
     public route: ActivatedRoute,
     public router: Router,
+    public evenementService: EvenementService,
     public benevoleService: BenevoleService,
     public croisementService: CroisementService,
+    public transmissionService: TransmissionService,
     public standService: StandService,
     public mailService: MailService,
     public sanitizer: DomSanitizer) {
@@ -44,15 +46,30 @@ export class GestionStandsComponent implements OnInit {
     this.choix = "";
     this.getAll();
 
+    this.getEvenement();
+
+
   }
+
+
+  getEvenement() {
+    this.evenementService.getById(this.organumber).subscribe(data => {
+      console.log(data);
+      data.eventName = "Gestion par Stand - " + data.eventName
+      this.transmissionService.dataTransmission(data);
+  }, err => {
+      console.log(err);
+      this.router.navigate(['error']);
+    });
+}
 
 
   getAll(): void {
     console.log("find")
-    this.standService.getAll().subscribe(data => {
+    this.standService.getAll(this.organumber).subscribe(data => {
       console.log(data)
 
-      this.stands = data['stands'];
+      this.stands = data;
     },
       error => {
         console.log('😢 Oh no!', error);

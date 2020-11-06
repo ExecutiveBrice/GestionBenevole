@@ -14,7 +14,9 @@ import java.util.List;
 @Repository
 public interface BenevoleRepository extends JpaRepository<Benevole, Integer> {
 
-    Benevole getOne(Integer childId);
+    Benevole getOne(Integer benevoleId);
+
+    Benevole findByEmailAndEvenementId(String email, Integer evenementId);
 
 
     List<Benevole> findByEvenementId(Integer evenementId);

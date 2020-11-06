@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ConfigService } from '../../services';
+import { ConfigService, EvenementService, TransmissionService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Evenement } from '../../models';
 import QRCode from 'qrcode'
@@ -21,7 +21,7 @@ export class CreationComponent implements OnInit {
     contactTel: "06 00 00 00",
     endDate: new Date(),
     eventName: "Ma fête à moi",
-    id: 0,
+    id: null,
     password: "facil",
     startDate: new Date()
   };
@@ -30,6 +30,8 @@ export class CreationComponent implements OnInit {
 
   constructor(
     public configService: ConfigService,
+    public evenementService: EvenementService,
+    public transmissionService: TransmissionService,
     public sanitizer: DomSanitizer) { }
 
 
@@ -37,15 +39,35 @@ export class CreationComponent implements OnInit {
 
     this.new = true;
     this.ok = true;
+    this.getEvenement();
+
+
   }
 
 
+  getEvenement() {
+    this.evenementService.getById(0).subscribe(data => {
+        console.log(data);
+        this.evenement = data;
+        this.transmissionService.dataTransmission(this.evenement);
+    }, err => {
+        console.log(err);
+    });
+}
+
+
+
   create(evenement: Evenement): void {
-    this.new = false
-    this.ok = true
-    evenement.id = 486
-    this.using_address ="https://www.alod.fr/connexion/" + evenement.id
-      this.managing_address ="https://www.alod.fr/gestion/" + evenement.id
+
+
+    this.evenementService.ajout(evenement).subscribe(data => {
+      console.log(data)
+
+      this.new = false
+      this.ok = true
+
+      this.using_address = "https://www.alod.fr/connexion/" + data.id
+      this.managing_address = "https://www.alod.fr/gestion/" + data.id
       // With promises
       QRCode.toDataURL(this.using_address)
         .then(url => {
@@ -55,13 +77,6 @@ export class CreationComponent implements OnInit {
         .catch(err => {
           console.error(err)
         })
-
-    this.configService.create(evenement).subscribe(data => {
-      console.log(data)
-
-
-
-
     },
       error => {
         console.log('😢 Oh no!', error);

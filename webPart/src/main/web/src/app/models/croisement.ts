@@ -1,15 +1,15 @@
 import { Creneau } from "./creneau";
 import { Stand } from "./stand";
 import { Benevole } from "./benevole";
+import { Evenement } from './event';
 
 export class Croisement {
   id:number;
-  creneau: number;
-  stand: number;
-  Creneau: Creneau;
-  Stand: Stand;
-  Benevoles: Benevole[];
+  creneau: Creneau;
+  stand: Stand;
+  benevoles: Benevole[];
   selected:boolean;
   besoin:boolean;
   limite:number;
+  evenement:Evenement;
 }

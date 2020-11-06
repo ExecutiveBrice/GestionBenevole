@@ -6,17 +6,17 @@ import java.util.List;
 
 @Entity
 @Table(name = "STAND")
-public class Stand implements java.io.Serializable {
+public class Stand {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
     @Column(name = "NOM", nullable = false)
-    private Integer nom;
+    private String nom;
 
     @Column(name = "DESCRIPTION")
-    private Integer description;
+    private String description;
 
     @Column(name = "ETAT", nullable = false)
     private Integer etat;
@@ -25,13 +25,14 @@ public class Stand implements java.io.Serializable {
     private Integer ordre;
 
     @Column(name = "BULLE")
-    private Integer bulle;
+    private String bulle;
 
     @OneToMany(mappedBy="stand")
     private List<Croisement> croisements;
 
     @ManyToOne
     private Evenement evenement;
+
 
     public Integer getId() {
         return id;
@@ -41,19 +42,19 @@ public class Stand implements java.io.Serializable {
         this.id = id;
     }
 
-    public Integer getNom() {
+    public String getNom() {
         return nom;
     }
 
-    public void setNom(Integer nom) {
+    public void setNom(String nom) {
         this.nom = nom;
     }
 
-    public Integer getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(Integer description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -73,11 +74,11 @@ public class Stand implements java.io.Serializable {
         this.ordre = ordre;
     }
 
-    public Integer getBulle() {
+    public String getBulle() {
         return bulle;
     }
 
-    public void setBulle(Integer bulle) {
+    public void setBulle(String bulle) {
         this.bulle = bulle;
     }
 

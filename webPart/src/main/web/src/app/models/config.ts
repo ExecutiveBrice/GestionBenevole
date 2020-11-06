@@ -1,6 +1,7 @@
+import { Evenement } from './event';
+
 export class Config {
   param: string;
   value: string;
-  createdAt: string;
-  updatedAt: string;
+  evenement:Evenement;
 }

@@ -1,12 +1,13 @@
 package com.brice.corp.model;
 
+
 import javax.persistence.*;
 import java.util.List;
 
 
 @Entity
 @Table(name = "BENEVOLE")
-public class Benevole implements java.io.Serializable {
+public class Benevole {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "ID", nullable = false)

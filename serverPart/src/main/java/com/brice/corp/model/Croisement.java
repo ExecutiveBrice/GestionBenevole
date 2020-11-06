@@ -1,12 +1,14 @@
 package com.brice.corp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
 
 @Entity
 @Table(name = "CROISEMENT")
-public class Croisement implements java.io.Serializable {
+public class Croisement {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "ID", nullable = false)
@@ -16,19 +18,21 @@ public class Croisement implements java.io.Serializable {
     private Integer limite;
 
     @Column(name = "BESOIN", nullable = false)
-    private Integer besoin;
+    private Boolean besoin;
 
     @Column(name = "SELECTED", nullable = false)
-    private Integer selected;
+    private Boolean selected;
 
+    @JsonIgnore
     @ManyToOne
     private Stand stand;
 
     @ManyToOne
     private Creneau creneau;
 
+    @JsonIgnore
     @ManyToMany(mappedBy="croisements")
-    private List<Benevole> benvoles;
+    private List<Benevole> benevoles;
 
     public Integer getId() {
         return id;
@@ -46,19 +50,19 @@ public class Croisement implements java.io.Serializable {
         this.limite = limite;
     }
 
-    public Integer getBesoin() {
+    public Boolean getBesoin() {
         return besoin;
     }
 
-    public void setBesoin(Integer besoin) {
+    public void setBesoin(Boolean besoin) {
         this.besoin = besoin;
     }
 
-    public Integer getSelected() {
+    public Boolean getSelected() {
         return selected;
     }
 
-    public void setSelected(Integer selected) {
+    public void setSelected(Boolean selected) {
         this.selected = selected;
     }
 
@@ -78,4 +82,12 @@ public class Croisement implements java.io.Serializable {
         this.creneau = creneau;
     }
 
+
+    public List<Benevole> getBenevoles() {
+        return benevoles;
+    }
+
+    public void setBenevoles(List<Benevole> benevoles) {
+        this.benevoles = benevoles;
+    }
 }

@@ -1,4 +1,5 @@
 import { Croisement } from "./croisement";
+import { Evenement } from './event';
 
 
 
@@ -10,5 +11,6 @@ export class Stand {
   bulle:string;
   ordre:number;
   etat:number;
-  Croisements: Croisement[];
+  croisements: Croisement[];
+  evenement:Evenement;
 }

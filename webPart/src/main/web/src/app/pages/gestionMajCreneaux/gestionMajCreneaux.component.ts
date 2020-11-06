@@ -1,8 +1,8 @@
 
 import { Component, OnInit } from '@angular/core';
-import { CreneauService } from '../../services';
+import { CreneauService,EvenementService, TransmissionService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Creneau } from '../../models';
+import { Creneau, Evenement } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
 
 
@@ -21,6 +21,8 @@ export class GestionMajCreneauxComponent implements OnInit {
 
   constructor(
     public route: ActivatedRoute,
+    public evenementService: EvenementService,
+    public transmissionService: TransmissionService,
     public router: Router,
     public creneauService: CreneauService,
     public sanitizer: DomSanitizer) {
@@ -39,15 +41,29 @@ export class GestionMajCreneauxComponent implements OnInit {
 
     this.choix = "";
     this.getAll();
+    this.getEvenement();
+
+
   }
 
 
+  getEvenement() {
+    this.evenementService.getById(this.organumber).subscribe(data => {
+      console.log(data);
+      data.eventName = "Gestion des Créneaux - " + data.eventName
+      this.transmissionService.dataTransmission(data);
+  }, err => {
+      console.log(err);
+      this.router.navigate(['error']);
+  })
+}
+
   getAll(): void {
     console.log("getAll")
-    this.creneauService.getAll().subscribe(data => {
+    this.creneauService.getAll(this.organumber).subscribe(data => {
       console.log(data)
 
-      this.creneaux = data['creneaux'];
+      this.creneaux = data;
     },
       error => {
         console.log('😢 Oh no!', error);
@@ -69,6 +85,9 @@ export class GestionMajCreneauxComponent implements OnInit {
 
   ajout(creneau:Creneau): void {
     console.log("ajout")
+
+    creneau.evenement = new Evenement();
+    creneau.evenement.id = this.organumber
     creneau.chevauchement = []
     this.creneauService.ajout(creneau).subscribe(data => {
       console.log(data)

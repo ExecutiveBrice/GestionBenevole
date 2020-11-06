@@ -1,9 +1,9 @@
 
 import { Component, OnInit } from '@angular/core';
-import { BenevoleService } from '../../services';
+import { BenevoleService, EvenementService, TransmissionService } from '../../services';
 import { CroisementService, StandService, MailService, ConfigService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Benevole, Croisement, Stand, Email } from '../../models';
+import { Benevole, Croisement, Stand, Email, Evenement } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -14,8 +14,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 export class InscriptionComponent implements OnInit {
 
-  organumber: number = 0;
-
+  organumber: number;
   new: boolean;
   validation: boolean;
   nouveau: boolean;
@@ -41,7 +40,9 @@ export class InscriptionComponent implements OnInit {
 
 
   constructor(public benevoleService: BenevoleService,
+    public evenementService: EvenementService,
     public route: ActivatedRoute,
+    public transmissionService: TransmissionService,
     public router: Router,
     public configService: ConfigService,
     public croisementService: CroisementService,
@@ -84,14 +85,29 @@ export class InscriptionComponent implements OnInit {
     this.bloquage();
     this.getTexts()
 
+    this.getEvenement();
+
+
   }
 
+
+  getEvenement() {
+    this.evenementService.getById(this.organumber).subscribe(data => {
+        console.log(data);
+        this.transmissionService.dataTransmission(data);
+    }, err => {
+        console.log(err);
+        this.router.navigate(['error']);
+    });
+}
+
+
   bloquage() {
-    this.configService.getParam('lock')
-      .subscribe(res => {
+    this.configService.getParam('lock', this.organumber)
+      .subscribe(data => {
         console.log("lock");
-        console.log(res['param'].value);
-        if (res['param'].value == "true") {
+        console.log(data);
+        if (data.value == "true") {
           this.router.navigate(['/404']);
         }
       }, err => {
@@ -101,7 +117,7 @@ export class InscriptionComponent implements OnInit {
 
 
   getCreneaux(): void {
-    this.croisementService.getByEtat(1).subscribe(data => {
+    this.croisementService.getByGroup(1, this.organumber).subscribe(data => {
       this.creneaux = data['croisements']
     },
       error => {
@@ -112,7 +128,7 @@ export class InscriptionComponent implements OnInit {
 
   getPreparatifs(): void {
     console.log("getPreparatifs")
-    this.croisementService.getByEtat(5).subscribe(data => {
+    this.croisementService.getByGroup(5, this.organumber).subscribe(data => {
       console.log(data)
       this.preparatifs = data['croisements']
     },
@@ -128,7 +144,7 @@ export class InscriptionComponent implements OnInit {
     this.updateCroisementListe(this.preparatifs)
     this.updateCroisementListe(this.creneaux)
     this.stands.forEach(stand => {
-      this.updateCroisementListe(stand.Croisements)
+      this.updateCroisementListe(stand.croisements)
     });
     this.getBesoin();
     this.calculChevauchement(benevole)
@@ -142,7 +158,7 @@ export class InscriptionComponent implements OnInit {
       }
     })
     this.stands.forEach(stand => {
-      stand.Croisements.forEach(croisement => {
+      stand.croisements.forEach(croisement => {
         if (croisement.besoin == true) {
           this.besoins.push(croisement);
         }
@@ -152,11 +168,11 @@ export class InscriptionComponent implements OnInit {
 
 
   getStand(): void {
-    this.standService.getAll().subscribe(data => {
-      data['stands'].forEach(stand => {
+    this.standService.getAll(this.organumber).subscribe(data => {
+      data.forEach(stand => {
         if (stand.etat == 2 || stand.etat == 3) {
           this.croisementService.getByStand(stand.id).subscribe(data => {
-            stand.Croisements = data['croisements']
+            stand.croisements = data
             this.stands.push(stand)
           },
             error => {
@@ -177,10 +193,10 @@ export class InscriptionComponent implements OnInit {
     console.log("updateCroisementListe")
     console.log(croisements)
     for (let index = 0; index < croisements.length; index++) {
-      for (let indexb = 0; indexb < croisements[index].Benevoles.length; indexb++) {
-        if (croisements[index].Benevoles[indexb].id == this.benevole.id) {
+      for (let indexb = 0; indexb < croisements[index].benevoles.length; indexb++) {
+        if (croisements[index].benevoles[indexb].id == this.benevole.id) {
           croisements[index].selected = true;
-          this.benevole.Croisements.push(croisements[index]);
+          this.benevole.croisements.push(croisements[index]);
           break;
         } else {
           croisements[index].selected = false;
@@ -193,8 +209,8 @@ export class InscriptionComponent implements OnInit {
   addCroisements(benevole: Benevole): void {
     console.log("addCroisements")
     console.log(benevole)
-    benevole.Croisements.forEach(croisement => {
-      croisement.Benevoles = []
+    benevole.croisements.forEach(croisement => {
+      croisement.benevoles = []
     });
     benevole.email = benevole.email.toLowerCase();
     this.benevoleService.addCroisements(benevole).subscribe(data => {
@@ -212,29 +228,29 @@ export class InscriptionComponent implements OnInit {
   choisir(croisement: Croisement): void {
     this.chevauchement = false;
     let added = false;
-    for (let index = 0; index < this.benevole.Croisements.length; index++) {
-      if (croisement.id == this.benevole.Croisements[index].id) {
-        for (let indexBenevole = 0; indexBenevole < croisement.Benevoles.length; indexBenevole++) {
-          if (this.benevole.id == croisement.Benevoles[indexBenevole].id) {
-            croisement.Benevoles.splice(indexBenevole, 1);
+    for (let index = 0; index < this.benevole.croisements.length; index++) {
+      if (croisement.id == this.benevole.croisements[index].id) {
+        for (let indexBenevole = 0; indexBenevole < croisement.benevoles.length; indexBenevole++) {
+          if (this.benevole.id == croisement.benevoles[indexBenevole].id) {
+            croisement.benevoles.splice(indexBenevole, 1);
             console.log("retrait du benevole " + indexBenevole)
           }
         }
         croisement.selected = false;
-        this.benevole.Croisements.splice(index, 1);
+        this.benevole.croisements.splice(index, 1);
         added = true;
         break;
       }
     }
 
-    if (croisement.Benevoles.length < croisement.limite) {
+    if (croisement.benevoles.length < croisement.limite) {
       console.log("croisement.Benevoles.length < croisement.limite")
       this.plein = false;
       if (!added) {
         croisement.selected = true;
-        this.benevole.Croisements.push(croisement);
-        croisement.Benevoles.push(this.benevole);
-        if (croisement.Benevoles.length > croisement.limite) {
+        this.benevole.croisements.push(croisement);
+        croisement.benevoles.push(this.benevole);
+        if (croisement.benevoles.length > croisement.limite) {
           console.log("croisement.Benevoles.length < croisement.limite")
           this.plein = true;
         }
@@ -252,13 +268,13 @@ export class InscriptionComponent implements OnInit {
     this.chevauchement = false;
 
     let listePlages = []
-    for (let index = 0; index < benevole.Croisements.length; index++) {
-      if (listePlages.indexOf(benevole.Croisements[index].Creneau.id) >= 0) {
+    for (let index = 0; index < benevole.croisements.length; index++) {
+      if (listePlages.indexOf(benevole.croisements[index].creneau.id) >= 0) {
         this.chevauchement = true;
         break;
       } else {
-        listePlages.push(benevole.Croisements[index].Creneau.id)
-        listePlages = listePlages.concat(benevole.Croisements[index].Creneau.chevauchement)
+        listePlages.push(benevole.croisements[index].creneau.id)
+        listePlages = listePlages.concat(benevole.croisements[index].creneau.chevauchement)
         console.log(listePlages)
       }
     };
@@ -276,9 +292,9 @@ export class InscriptionComponent implements OnInit {
       this.email.to = this.benevole.email
       this.email.subject = "Validation de participation"
       this.email.text = this.emailText1;
-      this.benevole.Croisements.sort((a, b) => (a.Creneau.ordre > b.Creneau.ordre) ? 1 : ((b.Creneau.ordre > a.Creneau.ordre) ? -1 : 0));
-      this.benevole.Croisements.forEach(croisement => {
-        this.email.text = this.email.text + (croisement.Stand.nom == "tous" ? "N'importe quel stand" : croisement.Stand.nom) + " - " + croisement.Creneau.plage + "<br>"
+      this.benevole.croisements.sort((a, b) => (a.creneau.ordre > b.creneau.ordre) ? 1 : ((b.creneau.ordre > a.creneau.ordre) ? -1 : 0));
+      this.benevole.croisements.forEach(croisement => {
+        this.email.text = this.email.text + (croisement.stand.nom == "tous" ? "N'importe quel stand" : croisement.stand.nom) + " - " + croisement.creneau.plage + "<br>"
       });
 
       if (this.benevole.gateaux) {
@@ -308,15 +324,15 @@ export class InscriptionComponent implements OnInit {
 
 
   getTexts() {
-    this.configService.getParam("validation1").subscribe(res => {
-      console.log(res['param'].value);
-      this.emailText1 = res['param'].value;
+    this.configService.getParam("validation1", this.organumber).subscribe(data => {
+      console.log(data.value);
+      this.emailText1 = data.value;
     }, err => {
       console.log(err);
     });
-    this.configService.getParam("validation2").subscribe(res => {
-      console.log(res['param'].value);
-      this.emailText2 = res['param'].value;
+    this.configService.getParam("validation2", this.organumber).subscribe(data => {
+      console.log(data.value);
+      this.emailText2 = data.value;
     }, err => {
       console.log(err);
     });

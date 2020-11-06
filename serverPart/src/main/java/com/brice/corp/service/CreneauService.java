@@ -13,6 +13,8 @@ public interface CreneauService {
 
     void persist(Creneau child);
 
+    List<Creneau> findByGroupeAndEvenementId(Integer groupe, Integer evenementId);
+
     List<Creneau> findByEvenementId(Integer evenementId);
 
     List<Creneau> findAll();

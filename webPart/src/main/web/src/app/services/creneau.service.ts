@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Creneau } from '../models';
 
@@ -11,8 +10,9 @@ export class CreneauService {
     private http: HttpClient
   ) { }
 
-  getAll() {
-    return this.http.get<Creneau[]>(this.apiUrl + '/getAll', {responseType: 'json'});
+  getAll(eventId: number) {
+    let params = new HttpParams().set('eventId', ''+eventId+'');
+    return this.http.get<Creneau[]>(this.apiUrl + '/getAll', {params, responseType: 'json'});
   }
   ajout(creneau:Creneau) {
     return this.http.post(this.apiUrl + '/', creneau, {responseType: 'json'});

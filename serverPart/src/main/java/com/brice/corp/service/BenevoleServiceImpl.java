@@ -36,7 +36,6 @@ public class BenevoleServiceImpl implements BenevoleService {
         return benevoleRepository.findAll();
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -45,8 +44,17 @@ public class BenevoleServiceImpl implements BenevoleService {
         return benevoleRepository.getOne(childId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Benevole findByEmail(String email, Integer evenementId){
+        return benevoleRepository.findByEmailAndEvenementId(email, evenementId);
+    }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Benevole> findByEvenementId(Integer evenementId){
         return benevoleRepository.findByEvenementId(evenementId);

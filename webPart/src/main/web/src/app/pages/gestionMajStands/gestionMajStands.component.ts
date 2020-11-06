@@ -1,8 +1,8 @@
 
 import { Component, OnInit } from '@angular/core';
-import { CroisementService, StandService, CreneauService } from '../../services';
+import { CroisementService, StandService, CreneauService, EvenementService, TransmissionService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Croisement, Stand, Creneau } from '../../models';
+import { Croisement, Stand, Creneau, Evenement } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
 
 
@@ -23,6 +23,8 @@ export class GestionMajStandsComponent implements OnInit {
   constructor(
     public route: ActivatedRoute,
     public router: Router,
+    public evenementService: EvenementService,
+    public transmissionService: TransmissionService,
     public creneauService: CreneauService,
     public croisementService: CroisementService,
     public standService: StandService,
@@ -42,13 +44,28 @@ export class GestionMajStandsComponent implements OnInit {
     this.creneaux = [];
     this.choix = "";
     this.getAllStands();
-    this.getAllCrenneaux();
+    this.getAllCreneaux();
+    this.getEvenement();
+
+
   }
+
+
+  getEvenement() {
+    this.evenementService.getById(this.organumber).subscribe(data => {
+      console.log(data);
+      data.eventName = "Gestion des Stands - " + data.eventName
+      this.transmissionService.dataTransmission(data);
+  }, err => {
+      console.log(err);
+      this.router.navigate(['error']);
+  })
+}
 
   existInCroisements(croisements: Croisement[], id: number): boolean {
     let existe = false;
     croisements.forEach(croisement => {
-      if (croisement.Creneau.id == id) {
+      if (croisement.creneau.id == id) {
         existe = true;
       }
     });
@@ -58,20 +75,21 @@ export class GestionMajStandsComponent implements OnInit {
 
   getAllStands(): void {
     console.log("find")
-    this.standService.getAll().subscribe(data => {
+    this.standService.getAll(this.organumber).subscribe(data => {
       console.log(data)
-      this.stands = data['stands'];
+      this.stands = data;
     },
       error => {
         console.log('😢 Oh no!', error);
       });
   }
 
-  getAllCrenneaux(): void {
-    console.log("getAllCrenneaux")
-    this.creneauService.getAll().subscribe(data => {
+  getAllCreneaux(): void {
+    console.log("getAllCreneaux")
+    this.creneauService.getAll(this.organumber).subscribe(data => {
       console.log(data)
-      this.creneaux = data['creneaux'];
+
+      this.creneaux = data;
     },
       error => {
         console.log('😢 Oh no!', error);
@@ -79,7 +97,7 @@ export class GestionMajStandsComponent implements OnInit {
   }
 
   update(stand): void {
-    console.log("update")
+    console.log(stand)
     this.standService.update(stand).subscribe(data => {
       console.log(data)
       this.getAllStands()
@@ -93,7 +111,7 @@ export class GestionMajStandsComponent implements OnInit {
   
 
   updateCroisement(croisement:Croisement): void {
-    console.log("update")
+    console.log(croisement)
     this.croisementService.update(croisement).subscribe(data => {
       console.log(data)
       this.getAllStands()
@@ -107,9 +125,11 @@ export class GestionMajStandsComponent implements OnInit {
   ajoutCroisement(stand: Stand, creneau: Creneau): void {
     console.log("ajoutCroisement")
     let croisement = new Croisement()
-    croisement.Stand = stand
-    croisement.Creneau = creneau
-
+    croisement.stand = stand
+    croisement.creneau = creneau
+    croisement.besoin = false;
+    croisement.selected = false;
+    croisement.limite = 0;
     this.croisementService.ajout(croisement).subscribe(data => {
       console.log(data)
       this.getAllStands()
@@ -135,7 +155,12 @@ export class GestionMajStandsComponent implements OnInit {
 
   ajout(stand: Stand): void {
     console.log("ajout")
-    stand.Croisements = []
+    stand.croisements = []
+
+    stand.evenement = new Evenement();
+    stand.evenement.id = this.organumber
+
+    stand.etat = 0
     this.standService.ajout(stand).subscribe(data => {
       console.log(data)
       this.getAllStands()

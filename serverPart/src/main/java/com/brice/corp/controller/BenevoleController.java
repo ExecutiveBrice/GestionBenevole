@@ -9,10 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,8 +27,8 @@ public class BenevoleController {
 
 
 
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public ResponseEntity<Benevole> add(@RequestParam Benevole benevole) {
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    public ResponseEntity<Benevole> add(@RequestBody Benevole benevole) {
         logger.debug("add Benevole");
         benevoleService.persist(benevole);
 
@@ -43,12 +40,26 @@ public class BenevoleController {
     }
 
 
-    @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public ResponseEntity<Benevole> update(@RequestParam Benevole benevole) {
+    @RequestMapping(value = "/", method = RequestMethod.PUT)
+    public ResponseEntity<Benevole> update(@RequestBody Benevole benevole) {
         logger.debug("update Benevole");
         benevoleService.persist(benevole);
         return new ResponseEntity<>(benevole, HttpStatus.OK);
     }
+
+
+    @RequestMapping(value = "/byMail", method = RequestMethod.GET)
+    public ResponseEntity<Benevole> getByMail(@RequestParam String email, @RequestParam Integer eventId) {
+        logger.debug("getByMail Benevole");
+        Benevole benevole = benevoleService.findByEmail(email,eventId );
+
+        if(benevole == null) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(benevole, HttpStatus.OK);
+    }
+
 
     @RequestMapping(value = "/getByEvenementId", method = RequestMethod.GET)
     public ResponseEntity<List<Benevole>> getByEvenementId(@RequestParam Integer eventId) {

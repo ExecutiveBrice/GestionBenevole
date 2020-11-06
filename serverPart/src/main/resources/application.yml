@@ -7,9 +7,10 @@ spring:
 logging:
   file: /home/pi/java_gestion_benevole.log
   level:
+    com.brice.corp: DEBUG
     root: WARN
-    org.springframework.web: DEBUG
-    org.hibernate: ERROR
+    org.springframework.web: WARN
+    org.hibernate: WARN
 datasource:
   url: jdbc:postgresql://192.168.1.19:5432/postgres
   username: pi
@@ -20,6 +21,6 @@ datasource:
   hibernate:
     hbm2ddl.method: create-drop
     hbm2ddl.auto: update
-    show_sql: true
+    show_sql: false
     format_sql: true
     dialect: org.hibernate.dialect.PostgreSQLDialect

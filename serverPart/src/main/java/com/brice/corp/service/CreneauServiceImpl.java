@@ -34,7 +34,6 @@ public class CreneauServiceImpl implements CreneauService {
         return creneauRepository.findAll();
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -43,7 +42,17 @@ public class CreneauServiceImpl implements CreneauService {
         return creneauRepository.getOne(childId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Creneau> findByGroupeAndEvenementId(Integer groupe, Integer evenementId){
+        return creneauRepository.findByEvenementId(evenementId);
+    }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Creneau> findByEvenementId(Integer evenementId){
         return creneauRepository.findByEvenementId(evenementId);

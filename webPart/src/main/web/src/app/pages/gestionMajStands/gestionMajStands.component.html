@@ -70,17 +70,17 @@
     <div class="row" *ngIf="ajouterCroisement == stand.id">
       <div class="col-sm-12 ">
         <div *ngFor="let creneau of creneaux | orderBy:'ordre':false " class="">
-          <button *ngIf="!existInCroisements(stand.Croisements, creneau.id)" type="button"
+          <button *ngIf="!existInCroisements(stand.croisements, creneau.id)" type="button"
             class="btn btn-block btn-secondary col-sm-4" (click)="ajoutCroisement(stand, creneau)">{{creneau.plage}}
           </button>
         </div>
       </div>
     </div>
 
-    <div *ngFor="let croisement of stand.Croisements | orderBy:'Creneau.ordre':false">
+    <div *ngFor="let croisement of stand.croisements | orderBy:'creneau.ordre':false">
       <div class="row bordered">
         <div class="input-group col-sm-10">
-          <span class="input-group-text">{{croisement.Creneau.plage}}</span>
+          <span class="input-group-text">{{croisement.creneau.plage}}</span>
         </div>
         <div class="input-group col-sm-2">
           <button type="button" class="btn btn-block btn-danger" (click)="deleteCroisement(croisement)">X</button>

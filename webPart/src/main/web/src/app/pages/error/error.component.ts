@@ -1,5 +1,5 @@
 
-import { Component, OnChanges } from '@angular/core';
+import { Component } from '@angular/core';
 import { ConfigService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -9,7 +9,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./error.component.css']
 })
 
-export class ErrorComponent implements OnChanges {
+export class ErrorComponent {
   text:string
 
   constructor(    public configService: ConfigService,
@@ -17,15 +17,13 @@ export class ErrorComponent implements OnChanges {
     this.getText()
   }
 
-  ngOnChanges() {
 
-  }
  
 
   getText() {
-    this.configService.getParam("erreur1").subscribe(res => {
-      console.log(res['param'].value);
-      this.text = res['param'].value;
+    this.configService.getParam("erreur1", 0).subscribe(data => {
+      console.log(data.value);
+      this.text = data.value;
     }, err => {
       console.log(err);
     });

@@ -1,22 +1,22 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Stand } from '../models';
 
 @Injectable()
 export class StandService {
-  apiUrl = '/stand';
+  apiUrl = 'stand';
 
   constructor(
     private http: HttpClient
   ) { }
 
 
-  getAll() {
-    return this.http.get<Stand[]>(this.apiUrl + '/getAll', {responseType: 'json'});
+  getAll(eventId: number) {
+    let params = new HttpParams().set('eventId', ''+eventId+'');
+    return this.http.get<Stand[]>(this.apiUrl + '/getAll', {params, responseType: 'json'});
   }
-  getById(id:number) {
-    let params = new HttpParams().set('id', ''+id+'');
+  getById(id:number, eventId: number) {
+    let params = new HttpParams().set('id', ''+id+'').set('eventId', ''+eventId+'');
     return this.http.get(this.apiUrl + '/getById', {params, responseType: 'json'});
   }
   ajout(stand:Stand) {

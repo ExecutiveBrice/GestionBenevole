@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Croisement } from '../models';
 
@@ -13,26 +12,27 @@ export class CroisementService {
 
 
   getAll() {
-    return this.http.get(this.apiUrl + '/getAll', {responseType: 'json'});
+    return this.http.get<Croisement[]>(this.apiUrl + '/getAll', {responseType: 'json'});
   }
+
   getById(id:number) {
     let params = new HttpParams().set('id', ''+id+'');
     return this.http.get(this.apiUrl + '/getById', {params, responseType: 'json'});
   }
-    
+
   getByStand(id:number) {
     let params = new HttpParams().set('id', ''+id+'');
-    return this.http.get(this.apiUrl + '/getByStand', {params, responseType: 'json'});
+    return this.http.get<Croisement[]>(this.apiUrl + '/getByStand', {params, responseType: 'json'});
   }
-    
+
   getByCreneau(id:String) {
     let params = new HttpParams().set('id', ''+id+'');
-    return this.http.get(this.apiUrl + '/getByCreneau', {params, responseType: 'json'});
+    return this.http.get<Croisement[]>(this.apiUrl + '/getByCreneau', {params, responseType: 'json'});
   }
     
-  getByEtat(etat:number) {
-    let params = new HttpParams().set('etat', ''+etat+'');
-    return this.http.get(this.apiUrl + '/getByEtat', {params, responseType: 'json'});
+  getByGroup(group:number, eventId:number) {
+    let params = new HttpParams().set('group', ''+group+'').set('eventId', ''+eventId+'');
+    return this.http.get<Croisement[]>(this.apiUrl + '/getByGroup', {params, responseType: 'json'});
   }
   ajout(croisement:Croisement) {
     return this.http.post(this.apiUrl + '/', croisement, {responseType: 'json'});

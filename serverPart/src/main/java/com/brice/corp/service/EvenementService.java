@@ -9,9 +9,9 @@ import java.util.List;
  */
 public interface EvenementService {
 
-    void persist(Evenement child);
+    void persist(Evenement evenement);
 
     List<Evenement> findAll();
 
-    Evenement findById(Integer childId);
+    Evenement findById(Integer evenementId);
 }

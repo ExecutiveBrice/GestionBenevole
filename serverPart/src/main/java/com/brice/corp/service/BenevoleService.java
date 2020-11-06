@@ -15,6 +15,10 @@ public interface BenevoleService {
 
     List<Benevole> findByEvenementId(Integer evenementId);
 
+    Benevole findByEmail(String email, Integer evenementId);
+
+
+
     List<Benevole> findAll();
 
     Benevole findById(Integer childId);

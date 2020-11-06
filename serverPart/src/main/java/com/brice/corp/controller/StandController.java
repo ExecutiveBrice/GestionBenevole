@@ -9,10 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,8 +27,8 @@ public class StandController {
 
 
 
-    @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public ResponseEntity<Stand> add(@RequestParam Stand stand) {
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    public ResponseEntity<Stand> add(@RequestBody Stand stand) {
         logger.debug("add Stand");
         standService.persist(stand);
 
@@ -43,8 +40,8 @@ public class StandController {
     }
 
 
-    @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public ResponseEntity<Stand> update(@RequestParam Stand stand) {
+    @RequestMapping(value = "/", method = RequestMethod.PUT)
+    public ResponseEntity<Stand> update(@RequestBody Stand stand) {
         logger.debug("update Stand");
         standService.persist(stand);
         return new ResponseEntity<>(stand, HttpStatus.OK);

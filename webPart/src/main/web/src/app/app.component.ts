@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { User } from './models';
-import { UserService, MailService, ConfigService } from './services';
+import { EvenementService, MailService, ConfigService } from './services';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Email, Evenement } from './models';
+import { Subscription } from 'rxjs';
+import { TransmissionService } from './services/transmission.service';
 
 @Component({
     selector: 'app',
@@ -11,16 +12,14 @@ import { Email, Evenement } from './models';
 })
 
 export class AppComponent {
-
+    subscription = new Subscription()
     evenement : Evenement;
-    utilisateur: User = null;
     retour: boolean = false;
     email: Email = {
         to: "",
         subject: "",
         text: ""
     }
-    users: User[];
     mail: boolean;
     titleText:string;
     titleDate:string;
@@ -30,8 +29,9 @@ export class AppComponent {
 
     constructor(
         public configService:ConfigService,
+        public transmissionService: TransmissionService,
         public mailService: MailService,
-        public userService: UserService,
+        public evenementService: EvenementService,
         public router: Router,
         public route: ActivatedRoute) {
     
@@ -41,27 +41,24 @@ export class AppComponent {
         this.evenement = new Evenement();
         this.mail = false;
         this.planing = false;
-        this.users = [];
         this.getTexts();
         console.log('AppComponent')
-        this.organumber = parseInt(this.route.snapshot.paramMap.get('id'));
-        console.log("AppComponent"+this.organumber)
+        this.organumber = isNaN(parseInt(this.route.snapshot.paramMap.get('id')))?0:parseInt(this.route.snapshot.paramMap.get('id'));
+        console.log("AppComponent "+this.organumber)
+
+        this.subscription = this.transmissionService.dataStream.subscribe(
+            data => {
+                console.log(data)
+                this.evenement = data
+            });
     }
 
-    getEvenement() {
-        this.userService.get().subscribe(res => {
-            console.log(res['users']);
-            this.users = res['users'];
-        }, err => {
-            console.log(err);
-        });
-    }
 
 
     envoiMail(email: Email) {
-        this.users.forEach(user => {
+
             email.subject = "problème"
-            email.to = user.email
+            email.to = this.evenement.contactEmail
 
             this.mailService.sendMail(email)
                 .subscribe(res => {
@@ -70,8 +67,6 @@ export class AppComponent {
                 }, err => {
                     console.log(err);
                 });
-        });
-
         this.mail = false;
     }
 
@@ -80,15 +75,15 @@ export class AppComponent {
 
 
     getTexts() {
-        this.configService.getParam("titleText").subscribe(res => {
-          console.log(res['param'].value);
-          this.titleText = res['param'].value;
+        this.configService.getParam("titleText", this.organumber).subscribe(data => {
+          console.log(data);
+          this.titleText = data.value;
         }, err => {
           console.log(err);
         });
-        this.configService.getParam("titleDate").subscribe(res => {
-          console.log(res['param'].value);
-          this.titleDate = res['param'].value;
+        this.configService.getParam("titleDate", this.organumber).subscribe(data => {
+          console.log(data);
+          this.titleDate = data.value;
         }, err => {
           console.log(err);
         });

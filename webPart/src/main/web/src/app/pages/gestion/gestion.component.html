@@ -12,23 +12,23 @@
 
 <div class="row">
       <div class="col-sm-3">
-            <button type="button" class="btn btn-block" routerLink="/gestionbenevoles">Gestion des
+            <button type="button" class="btn btn-block" [routerLink]="['/gestionbenevoles/', organumber]">Gestion des
                   Bénévoles</button>
       </div>
       <div class="col-sm-3">
-            <button type="button" class="btn btn-block" routerLink="/gestionstands">Gestion des
+            <button type="button" class="btn btn-block" [routerLink]="['/gestionstands/', organumber]">Gestion des
                   Stands</button>
       </div>
       <div class="col-sm-3">
-            <button type="button" class="btn btn-block" routerLink="/gestionmajstands">Maj des
+            <button type="button" class="btn btn-block" [routerLink]="['/gestionmajstands/', organumber]">Maj des
                   Stands</button>
       </div>
       <div class="col-sm-3">
-            <button type="button" class="btn btn-block" routerLink="/gestionmajcreneaux">Maj des
+            <button type="button" class="btn btn-block" [routerLink]="['/gestionmajcreneaux/', organumber]">Maj des
                   Creneaux</button>
       </div>
       <div class="col-sm-3">
-            <button type="button" class="btn btn-block" routerLink="/gestionmajconfig">Maj des
+            <button type="button" class="btn btn-block" [routerLink]="['/gestionmajconfig/', organumber]">Maj des
                   Infos</button>
       </div>
       <div class="col-sm-3">

@@ -1,3 +1,4 @@
+import { Evenement } from './event';
 
 
 
@@ -6,4 +7,6 @@ export class Creneau {
   plage: string;
   ordre:number;
   chevauchement:number[];
+  evenement:Evenement;
+  
 }

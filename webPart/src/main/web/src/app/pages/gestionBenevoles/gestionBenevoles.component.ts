@@ -1,7 +1,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { BenevoleService } from '../../services';
-import { CroisementService, StandService, MailService, ExcelService } from '../../services';
+import { TransmissionService, EvenementService, CroisementService, StandService, MailService, ExcelService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Benevole, Croisement, Email } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -29,6 +29,8 @@ export class GestionBenevolesComponent implements OnInit {
   constructor(
     public route: ActivatedRoute,
     public router: Router,
+    public evenementService: EvenementService,
+    public transmissionService: TransmissionService,
     public benevoleService: BenevoleService,
     public croisementService: CroisementService,
     public standService: StandService,
@@ -36,7 +38,7 @@ export class GestionBenevolesComponent implements OnInit {
     public excelService: ExcelService,
     public sanitizer: DomSanitizer) {
 
-  }
+    }
 
   ngOnInit() {
     this.organumber = parseInt(this.route.snapshot.paramMap.get('id'));
@@ -53,7 +55,22 @@ export class GestionBenevolesComponent implements OnInit {
     this.find();
     this.getCroisement();
 
+    this.getEvenement();
+
+
   }
+
+
+  getEvenement() {
+    this.evenementService.getById(this.organumber).subscribe(data => {
+      console.log(data);
+      data.eventName = "Gestion par Bénévole - " + data.eventName
+      this.transmissionService.dataTransmission(data);
+  }, err => {
+      console.log(err);
+      this.router.navigate(['error']);
+  })
+}
 
   exportAsXLSX(): void {
     this.excelService.exportAsExcelFile(this.benevoles, 'sample');
@@ -61,9 +78,9 @@ export class GestionBenevolesComponent implements OnInit {
 
   find(): void {
     console.log("find")
-    this.benevoleService.getAll().subscribe(data => {
+    this.benevoleService.getAll(this.organumber).subscribe(data => {
       console.log(data)
-      this.benevoles = data['benevoles'];
+      this.benevoles = data;
     },
       error => {
         console.log('😢 Oh no!', error);
@@ -84,19 +101,19 @@ export class GestionBenevolesComponent implements OnInit {
   choisir(benevole: Benevole, benecroisement: Croisement, croisement: Croisement): void {
     if (benecroisement != null) {
       if (benecroisement.id) {
-        for (let index = 0; index < benevole.Croisements.length; index++) {
-          if (benecroisement.id == benevole.Croisements[index].id) {
-            benevole.Croisements.splice(index, 1);
+        for (let index = 0; index < benevole.croisements.length; index++) {
+          if (benecroisement.id == benevole.croisements[index].id) {
+            benevole.croisements.splice(index, 1);
             break;
           }
         }
       }
     }
-    if (benevole.Croisements == null) {
-      benevole.Croisements = []
+    if (benevole.croisements == null) {
+      benevole.croisements = []
     }
     if (croisement != null) {
-      benevole.Croisements.push(croisement);
+      benevole.croisements.push(croisement);
     }
 
     this.addCroisements(benevole);

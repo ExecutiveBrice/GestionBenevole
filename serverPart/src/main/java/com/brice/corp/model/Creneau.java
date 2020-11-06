@@ -1,21 +1,20 @@
 package com.brice.corp.model;
 
 import javax.persistence.*;
-
 import java.util.List;
 
 
 
 @Entity
 @Table(name = "CRENEAU")
-public class Creneau implements java.io.Serializable {
+public class Creneau {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
     @Column(name = "PLAGE", nullable = false)
-    private Integer plage;
+    private String plage;
 
     @Column(name = "ORDRE", nullable = false)
     private Integer ordre;
@@ -24,10 +23,7 @@ public class Creneau implements java.io.Serializable {
     private Integer groupe;
 
     @Column(name = "CHEVAUCHEMENT")
-    private String chevauchement;
-
-    @OneToMany(mappedBy="creneau")
-    private List<Croisement> croisements;
+    private Integer[] chevauchement;
 
     @ManyToOne
     private Evenement evenement;
@@ -40,11 +36,11 @@ public class Creneau implements java.io.Serializable {
         this.id = id;
     }
 
-    public Integer getPlage() {
+    public String getPlage() {
         return plage;
     }
 
-    public void setPlage(Integer plage) {
+    public void setPlage(String plage) {
         this.plage = plage;
     }
 
@@ -64,20 +60,12 @@ public class Creneau implements java.io.Serializable {
         this.groupe = groupe;
     }
 
-    public String getChevauchement() {
+    public Integer[] getChevauchement() {
         return chevauchement;
     }
 
-    public void setChevauchement(String chevauchement) {
+    public void setChevauchement(Integer[] chevauchement) {
         this.chevauchement = chevauchement;
-    }
-
-    public List<Croisement> getCroisements() {
-        return croisements;
-    }
-
-    public void setCroisements(List<Croisement> croisements) {
-        this.croisements = croisements;
     }
 
     public Evenement getEvenement() {

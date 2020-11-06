@@ -3,10 +3,9 @@ package com.brice.corp.model;
 import javax.persistence.*;
 
 
-
 @Entity
 @Table(name = "CONFIG")
-public class Config implements java.io.Serializable {
+public class Config {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "ID", nullable = false)
@@ -20,9 +19,6 @@ public class Config implements java.io.Serializable {
 
     @ManyToOne
     private Evenement evenement;
-
-    public Config() {
-    }
 
     public Integer getId() {
         return id;

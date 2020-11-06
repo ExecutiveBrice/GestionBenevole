@@ -1,4 +1,5 @@
 import { Croisement } from "./croisement";
+import { Evenement } from './event';
 
 
 
@@ -10,12 +11,13 @@ export class Benevole {
   email: string;
   telephone: string;
   limite: number;
-  Croisements: Croisement[];
+  croisements: Croisement[];
   commentaire: string;
   reponse: string;
   gateaux: string;
+  evenement:Evenement;
 
   constructor(){
-    this.Croisements = []
+    this.croisements = []
   }
 }

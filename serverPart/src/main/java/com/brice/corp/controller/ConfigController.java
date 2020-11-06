@@ -9,10 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,7 +29,7 @@ public class ConfigController {
 
 
     @RequestMapping(value = "/", method = RequestMethod.PUT)
-    public ResponseEntity<Config> update(@RequestParam Config config) {
+    public ResponseEntity<Config> update(@RequestBody Config config) {
         logger.debug("update Config "+config.getParam());
         configService.persist(config);
         return new ResponseEntity<>(config, HttpStatus.OK);
@@ -40,9 +37,9 @@ public class ConfigController {
 
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ResponseEntity<Config> getByParamAndEvenementId(@RequestParam String param, @RequestParam Integer evenementId) {
-        logger.debug("getByParamAndEvenementId "+param+" and "+evenementId);
-        Config config = configService.getByParamAndEvenementId(param, evenementId);
+    public ResponseEntity<Config> getByParamAndEvenementId(@RequestParam String param, @RequestParam Integer eventId) {
+        logger.debug("getByParamAndEvenementId "+param+" and "+eventId);
+        Config config = configService.getByParamAndEvenementId(param, eventId);
         return new ResponseEntity<>(config, HttpStatus.OK);
     }
 

@@ -1,5 +1,5 @@
 
-import { Component, OnChanges } from '@angular/core';
+import { Component } from '@angular/core';
 import { SMSService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -10,7 +10,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./gestionSMS.component.css']
 })
 
-export class GestionSMSComponent implements OnChanges {
+export class GestionSMSComponent {
 
   sms = {
     numeros: "",
@@ -24,9 +24,7 @@ export class GestionSMSComponent implements OnChanges {
 
   }
 
-  ngOnChanges() {
 
-  }
 
   send(sms): void {
     console.log(sms);

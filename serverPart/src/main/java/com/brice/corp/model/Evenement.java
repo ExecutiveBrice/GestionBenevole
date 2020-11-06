@@ -1,88 +1,179 @@
 package com.brice.corp.model;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.persistence.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "EVENEMENT")
-public class Evenement implements java.io.Serializable {
+public class Evenement {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "ID", nullable = false)
     private Integer id;
 
-    @Column(name = "PRENOM", nullable = false)
-    private Integer prenom;
+    @Column(name = "CONTACT", nullable = false)
+    private String contact;
 
-    @Column(name = "NOM", nullable = false)
-    private Boolean nom;
+    @Column(name = "CONTACT_TEL")
+    private String contactTel;
 
-    @Column(name = "TELEPHONE")
-    private Boolean telephone;
+    @Column(name = "CONTACT_EMAIL", nullable = false)
+    private String contactEmail;
 
-    @Column(name = "EMAIL", nullable = false)
-    private Boolean email;
+    @Column(name = "EVENT_NAME", nullable = false)
+    private String eventName;
 
-    @Column(name = "COMMENTAIRE")
-    private Boolean commentaire;
+    @Column(name = "START_DATE", nullable = false)
+    private Date startDate;
 
-    @Column(name = "REPONSE")
-    private Boolean reponse;
+    @Column(name = "END_DATE")
+    private Date endDate;
 
+    @Column(name = "PASSWORD", nullable = false)
+    private String password;
 
-    public Integer getId() {
-        return id;
-    }
+    @JsonIgnore
+    @OneToMany(mappedBy="evenement")
+    private List<Benevole> benevoles;
+
+    @JsonIgnore
+    @OneToMany(mappedBy="evenement")
+    private List<Creneau> creneaus;
+
+    @JsonIgnore
+    @OneToMany(mappedBy="evenement")
+    private List<Config> configs;
+
+    @JsonIgnore
+    @OneToMany(mappedBy="evenement")
+    private List<Stand> stands;
+
+    public Integer getId() { return id; }
 
     public void setId(Integer id) {
         this.id = id;
     }
 
-    public Integer getPrenom() {
-        return prenom;
+    public String getContact() {
+        return contact;
     }
 
-    public void setPrenom(Integer prenom) {
-        this.prenom = prenom;
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 
-    public Boolean getNom() {
-        return nom;
+    public String getContactTel() {
+        return contactTel;
     }
 
-    public void setNom(Boolean nom) {
-        this.nom = nom;
+    public void setContactTel(String contactTel) {
+        this.contactTel = contactTel;
     }
 
-    public Boolean getTelephone() {
-        return telephone;
+    public String getContactEmail() {
+        return contactEmail;
     }
 
-    public void setTelephone(Boolean telephone) {
-        this.telephone = telephone;
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
     }
 
-    public Boolean getEmail() {
-        return email;
+    public String getEventName() {
+        return eventName;
     }
 
-    public void setEmail(Boolean email) {
-        this.email = email;
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
     }
 
-    public Boolean getCommentaire() {
-        return commentaire;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setCommentaire(Boolean commentaire) {
-        this.commentaire = commentaire;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
-    public Boolean getReponse() {
-        return reponse;
+    public Date getEndDate() {
+        return endDate;
     }
 
-    public void setReponse(Boolean reponse) {
-        this.reponse = reponse;
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<Benevole> getBenevoles() {
+        return benevoles;
+    }
+
+    public void setBenevoles(List<Benevole> benevoles) {
+        this.benevoles = benevoles;
+    }
+
+    public List<Creneau> getCreneaus() {
+        return creneaus;
+    }
+
+    public void setCreneaus(List<Creneau> creneaus) {
+        this.creneaus = creneaus;
+    }
+
+    public List<Config> getConfigs() {
+        return configs;
+    }
+
+    public void setConfigs(List<Config> configs) {
+        this.configs = configs;
+    }
+
+    public List<Stand> getStands() {
+        return stands;
+    }
+
+    public void setStands(List<Stand> stands) {
+        this.stands = stands;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Evenement)) return false;
+        Evenement evenement = (Evenement) o;
+        return Objects.equals(getId(), evenement.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public String toString() {
+        return "Evenement{" +
+                "id=" + id +
+                ", contact='" + contact + '\'' +
+                ", contactTel='" + contactTel + '\'' +
+                ", contactEmail='" + contactEmail + '\'' +
+                ", eventName='" + eventName + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", password='" + password + '\'' +
+                ", benevoles=" + benevoles +
+                ", creneaus=" + creneaus +
+                ", configs=" + configs +
+                ", stands=" + stands +
+                '}';
     }
 }

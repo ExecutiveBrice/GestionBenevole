@@ -33,6 +33,17 @@ public class CroisementServiceImpl implements CroisementService {
         croisementRepository.save(parent);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Croisement> findByCreneauGroupeAndCreneauEvenementId(Integer groupe, Integer eventId) {
+        return croisementRepository.findByCreneauGroupeAndCreneauEvenementId(groupe, eventId);
+    }
+
+
+
     /**
      * {@inheritDoc}
      */
