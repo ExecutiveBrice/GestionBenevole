@@ -1,6 +1,6 @@
 # Outil de gestion de bénévoles
 ## Architecture :
-* Backend : Spring 5 / hibernate*
+* Backend : Spring / hibernate
 * FrontEnd : Angular 9
 * Packaging : Springboot2
 
@@ -16,11 +16,11 @@
 ## Commandes utiles :
 ### Démarage de l'appli :
 *L'application s'arrete de fonctionner après fermeture de la session*
->java -jar <file_location>\gestion_benevole.jar --server.port=8091 --management.server.port=8191 --spring.config.location="file:///<file_location>\application.yml
+>java -jar <file_location>\gestion_benevole.jar --server.port=8091 --management.server.port=8191 --spring.config.location="file:///<file_location>\application.yml"
 
 ### Démarage de l'appli nohup :
 *L'application continu de fonctionner après fermeture de la session*
->nohup java -jar <file_location>\gestion_benevole.jar --server.port=8091 --management.server.port=8191 --spring.config.location="file:///<file_location>\application.yml > /dev/null &
+>nohup java -jar <file_location>\gestion_benevole.jar --server.port=8091 --management.server.port=8191 --spring.config.location="file:///<file_location>\application.yml" > /dev/null &
 
 
 ## Paramétrage de l'application
@@ -33,3 +33,5 @@
 ### hibernate par défaut
 * method: create-drop *création si absent*
 * auto : update *remplissage si existant*
+
+

@@ -10,7 +10,7 @@ import javax.annotation.PostConstruct;
 
 
 @Import(JpaConfiguration.class)
-@SpringBootApplication(scanBasePackages={"com.brice.corp"})// same as @Configuration @EnableAutoConfiguration @ComponentScan
+@SpringBootApplication(scanBasePackages={"com.wild.corp"})// same as @Configuration @EnableAutoConfiguration @ComponentScan
 public class RunWebApp {
 
 
@@ -20,10 +20,7 @@ public class RunWebApp {
 		springApplication.run(args);
 	}
 
-	/**
-	 * Permet de lancer une fonction au démarrage de l'application
-	 * ici, on charge le cache des olts
-	 */
+
 	@PostConstruct
 	private void init() {
 

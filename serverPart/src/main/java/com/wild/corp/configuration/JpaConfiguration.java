@@ -32,7 +32,7 @@ import java.util.Properties;
  * Classe de configuration globale
  */
 @Configuration
-@EnableJpaRepositories(basePackages = "com.brice.corp.repositories",
+@EnableJpaRepositories(basePackages = "com.wild.corp.repositories",
         entityManagerFactoryRef = "entityManagerFactory",
         transactionManagerRef = "transactionManager")
 @EnableTransactionManagement
@@ -82,7 +82,7 @@ public class JpaConfiguration {
         LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
         factoryBean.setDataSource(dataSource());
         // ici on importe à partir du package
-        factoryBean.setPackagesToScan(new String[]{"com.brice.corp.*"});
+        factoryBean.setPackagesToScan(new String[]{"com.wild.corp.*"});
         factoryBean.setJpaVendorAdapter(jpaVendorAdapter());
         factoryBean.setJpaProperties(jpaProperties());
         return factoryBean;
