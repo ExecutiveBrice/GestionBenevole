@@ -33,23 +33,37 @@ public class Evenement {
     @Column(name = "END_DATE")
     private Date endDate;
 
+    @Column(name = "RAPPEL_DATE")
+    private Date rappelDate;
+
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
+    @Column(name = "VALIDATION")
+    private String validation;
+
+    @Column(name = "RETOUR")
+    private String retour;
+
+    @Column(name = "SIGNATURE")
+    private String signature;
+
+    @Column(name = "RAPPEL")
+    private String rappel;
+
+    @Column(name = "LOCK")
+    private boolean lock;
+
     @JsonIgnore
-    @OneToMany(mappedBy="evenement")
+    @OneToMany(mappedBy="evenement" , orphanRemoval=true)
     private List<Benevole> benevoles;
 
     @JsonIgnore
-    @OneToMany(mappedBy="evenement")
+    @OneToMany(mappedBy="evenement" , orphanRemoval=true)
     private List<Creneau> creneaus;
 
     @JsonIgnore
-    @OneToMany(mappedBy="evenement")
-    private List<Config> configs;
-
-    @JsonIgnore
-    @OneToMany(mappedBy="evenement")
+    @OneToMany(mappedBy="evenement" , orphanRemoval=true)
     private List<Stand> stands;
 
     public Integer getId() { return id; }
@@ -130,20 +144,60 @@ public class Evenement {
         this.creneaus = creneaus;
     }
 
-    public List<Config> getConfigs() {
-        return configs;
-    }
-
-    public void setConfigs(List<Config> configs) {
-        this.configs = configs;
-    }
-
     public List<Stand> getStands() {
         return stands;
     }
 
     public void setStands(List<Stand> stands) {
         this.stands = stands;
+    }
+
+    public Date getRappelDate() {
+        return rappelDate;
+    }
+
+    public void setRappelDate(Date rappelDate) {
+        this.rappelDate = rappelDate;
+    }
+
+    public String getValidation() {
+        return validation;
+    }
+
+    public void setValidation(String validation) {
+        this.validation = validation;
+    }
+
+    public String getRetour() {
+        return retour;
+    }
+
+    public void setRetour(String retour) {
+        this.retour = retour;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    public String getRappel() {
+        return rappel;
+    }
+
+    public void setRappel(String rappel) {
+        this.rappel = rappel;
+    }
+
+    public boolean isLock() {
+        return lock;
+    }
+
+    public void setLock(boolean lock) {
+        this.lock = lock;
     }
 
     @Override
@@ -159,21 +213,5 @@ public class Evenement {
         return Objects.hash(getId());
     }
 
-    @Override
-    public String toString() {
-        return "Evenement{" +
-                "id=" + id +
-                ", contact='" + contact + '\'' +
-                ", contactTel='" + contactTel + '\'' +
-                ", contactEmail='" + contactEmail + '\'' +
-                ", eventName='" + eventName + '\'' +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", password='" + password + '\'' +
-                ", benevoles=" + benevoles +
-                ", creneaus=" + creneaus +
-                ", configs=" + configs +
-                ", stands=" + stands +
-                '}';
-    }
+
 }

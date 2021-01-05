@@ -3,10 +3,10 @@
 
   <div class="col-sm-12" *ngIf="choix == stand.nom">
     <div class="row">
-      <div *ngFor="let standcroisement of stand.Croisements | orderBy:'Creneau.ordre':false " class="col-sm-12 dropdown">
-        <h3><strong>{{standcroisement.Creneau.plage}} : ({{standcroisement.Benevoles.length}}/{{standcroisement.limite}})</strong></h3>
+      <div *ngFor="let standcroisement of stand.croisements | orderBy:'Creneau.ordre':false " class="col-sm-12 dropdown">
+        <h3><strong>{{standcroisement.creneau.plage}} : ({{standcroisement.benevoles.length}}/{{standcroisement.limite}})</strong></h3>
         <div class="row">
-          <div *ngFor="let benevole of standcroisement.Benevoles | orderBy:'nom':false " class="col-sm-12 dropdown">
+          <div *ngFor="let benevole of standcroisement.benevoles | orderBy:'nom':false " class="col-sm-12 dropdown">
             {{benevole.prenom}} {{benevole.nom}} - {{benevole.email}} - {{benevole.telephone}}
           </div>
         </div>

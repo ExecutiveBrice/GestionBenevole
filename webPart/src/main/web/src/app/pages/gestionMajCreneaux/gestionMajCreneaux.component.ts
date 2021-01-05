@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import { CreneauService,EvenementService, TransmissionService } from '../../services';
+import { ValidationService, CreneauService,EvenementService, TransmissionService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Creneau, Evenement } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -20,43 +20,27 @@ export class GestionMajCreneauxComponent implements OnInit {
   organumber:number;
 
   constructor(
+
     public route: ActivatedRoute,
     public evenementService: EvenementService,
     public transmissionService: TransmissionService,
     public router: Router,
     public creneauService: CreneauService,
+    public validationService: ValidationService,
     public sanitizer: DomSanitizer) {
 
   }
 
   ngOnInit() {
     this.organumber = parseInt(this.route.snapshot.paramMap.get('id'));
-
-    console.log(this.organumber)
-    if (!this.organumber || isNaN(this.organumber) || this.organumber < 1) {
-      this.router.navigate(['/error']);
-    }
+    this.validationService.testGestion(this.organumber)
 
     this.creneaux = [];
 
     this.choix = "";
     this.getAll();
-    this.getEvenement();
-
 
   }
-
-
-  getEvenement() {
-    this.evenementService.getById(this.organumber).subscribe(data => {
-      console.log(data);
-      data.eventName = "Gestion des Créneaux - " + data.eventName
-      this.transmissionService.dataTransmission(data);
-  }, err => {
-      console.log(err);
-      this.router.navigate(['error']);
-  })
-}
 
   getAll(): void {
     console.log("getAll")
@@ -86,10 +70,8 @@ export class GestionMajCreneauxComponent implements OnInit {
   ajout(creneau:Creneau): void {
     console.log("ajout")
 
-    creneau.evenement = new Evenement();
-    creneau.evenement.id = this.organumber
     creneau.chevauchement = []
-    this.creneauService.ajout(creneau).subscribe(data => {
+    this.creneauService.ajout(creneau, this.organumber).subscribe(data => {
       console.log(data)
      
       this.getAll();
@@ -112,13 +94,16 @@ export class GestionMajCreneauxComponent implements OnInit {
 
     if(existe){
       creneau.chevauchement.splice( creneau.chevauchement.indexOf(creneauChevauche.id), 1 );
+      creneauChevauche.chevauchement.splice( creneauChevauche.chevauchement.indexOf(creneau.id), 1 );
       console.log("retrait")
     }else{
       creneau.chevauchement.push(creneauChevauche.id)
+      creneauChevauche.chevauchement.push(creneau.id)
       console.log("ajout")
     }
   
     this.update(creneau)
+    this.update(creneauChevauche)
   }
 
   delete(creneau): void {

@@ -1,25 +1,4 @@
-
-@media screen and (min-width: 601px) {
-    a {
-      font-size: 40px;
-    }
-    .container {
-      min-height: 85vh;
-        font-size: 20px;
-        padding-top: 30px;
-      }
-  }
-  
-  /* If the screen size is 600px wide or less, set the font-size of <div> to 30px */
-  @media screen and (max-width: 600px) {
-    a {
-      font-size: 20px;
-    }
-    .container {
-      min-height: 85vh;
-        font-size: 10px;
-        padding-top: 30px;
-        
-      }
-
-  }
+.gros_titre {
+    font-size: xx-large;
+    color: honeydew;
+}

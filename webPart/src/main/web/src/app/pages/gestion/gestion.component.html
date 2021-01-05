@@ -11,6 +11,13 @@
 </div>
 
 <div class="row">
+      <div class="col-sm-12 ">
+            <div class="alert">
+                  <strong>
+                       Gestion de l'evenement
+                  </strong>
+            </div>
+      </div>
       <div class="col-sm-3">
             <button type="button" class="btn btn-block" [routerLink]="['/gestionbenevoles/', organumber]">Gestion des
                   Bénévoles</button>
@@ -19,27 +26,19 @@
             <button type="button" class="btn btn-block" [routerLink]="['/gestionstands/', organumber]">Gestion des
                   Stands</button>
       </div>
+
       <div class="col-sm-3">
-            <button type="button" class="btn btn-block" [routerLink]="['/gestionmajstands/', organumber]">Maj des
-                  Stands</button>
+            <button type="button" class="btn btn-block btn-success overflow-visibles" [ngClass]="{'btn-danger':evenement.lock}"
+                  (click)="updateBlocage()">Je clique pour<br />{{evenement.lock?'débloquer le site':'bloquer le site'}}</button>
       </div>
       <div class="col-sm-3">
-            <button type="button" class="btn btn-block" [routerLink]="['/gestionmajcreneaux/', organumber]">Maj des
-                  Creneaux</button>
+            <button type="button" class="btn btn-block" (click)="exportAsXLSX()">Télécharger</button>
       </div>
-      <div class="col-sm-3">
-            <button type="button" class="btn btn-block" [routerLink]="['/gestionmajconfig/', organumber]">Maj des
-                  Infos</button>
-      </div>
-      <div class="col-sm-3">
-            <button type="button" class="btn btn-block btn-success overflow-visibles" [ngClass]="{'btn-danger':bloque == 'true'}"
-                  (click)="updateBlocage(bloque)">Je clique pour<br />{{bloque == 'true'?'débloquer le site':'bloquer le site'}}</button>
-      </div>
-      <div class="col-sm-3">
+      <div class="col-sm-12">
             <button type="button" class="btn btn-block" (click)="mail = !mail">Envoi de mails</button>
       </div>
 
-      <div *ngIf="mail" class="form-group col-sm-3 ">
+      <div *ngIf="mail" class="form-group col-sm-12 ">
 
             <select [ngModel]="selectedDeviceObj" (ngModelChange)="getMailingList($event)" class="form-control">
                   <option [ngValue]="mailingList" *ngFor="let mailingList of mailingLists">{{mailingList.name}}
@@ -61,8 +60,34 @@
 
 
 
-      <div class="col-sm-3">
-            <button type="button" class="btn btn-block" (click)="exportAsXLSX()">Télécharger</button>
+
+
+</div>
+
+<div class="row">
+      <div class="col-sm-12 ">
+            <div class="alert">
+                  <strong>
+                       Parametrage de l'evenement
+                  </strong>
+            </div>
       </div>
+      <div class="col-sm-3">
+            <button type="button" class="btn btn-block" [routerLink]="['/gestionmajstands/', organumber]">Maj des
+                  Stands</button>
+      </div>
+      <div class="col-sm-3">
+            <button type="button" class="btn btn-block" [routerLink]="['/gestionmajcreneaux/', organumber]">Maj des
+                  Creneaux</button>
+      </div>
+      <div class="col-sm-3">
+            <button type="button" class="btn btn-block" [routerLink]="['/gestionmajconfig/', organumber]">Maj des
+                  Infos</button>
+      </div>
+      <div class="col-sm-3">
+            <a href="{{using_address}}">    <img src="{{qrcode}}" /></a>
+      </div>
+
+      
 
 </div>

@@ -17,7 +17,9 @@ import java.util.List;
 public interface EvenementRepository extends JpaRepository<Evenement, Integer> {
 
 
-    Evenement getOne(Integer evenementId);
+    List<Evenement> findAllById(Integer evenementId);
+
+    void deleteById(Integer evenementId);
 
 /*
     @Query("SELECT c FROM Child c WHERE c.name = :name AND c.firstName = :firstName")

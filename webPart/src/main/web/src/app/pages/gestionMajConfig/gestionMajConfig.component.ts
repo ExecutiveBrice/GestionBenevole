@@ -1,10 +1,10 @@
 
 import { Component, OnInit } from '@angular/core';
-import { TransmissionService, EvenementService, ConfigService } from '../../services';
+import { ValidationService, TransmissionService, EvenementService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Config } from '../../models';
+import { Evenement } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
-
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-gestionMajConfig',
@@ -13,65 +13,38 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 
 export class GestionMajConfigComponent implements OnInit {
- 
-  organumber:number;
 
-  configs: Config[];
+  organumber: number;
+  evenement: Evenement;
+  subscription = new Subscription();
 
   constructor(
     public route: ActivatedRoute,
     public router: Router,
     public transmissionService: TransmissionService,
     public evenementService: EvenementService,
-    public configService: ConfigService,
+    public validationService: ValidationService,
     public sanitizer: DomSanitizer) {
 
   }
 
   ngOnInit() {
     this.organumber = parseInt(this.route.snapshot.paramMap.get('id'));
+    this.validationService.testGestion(this.organumber)
 
-    console.log(this.organumber)
-    if (!this.organumber || isNaN(this.organumber) || this.organumber < 1) {
-      this.router.navigate(['/error']);
-    }
-
-
-    this.getAll();
-    this.getEvenement();
-
-
-  }
-
-
-  getEvenement() {
-    this.evenementService.getById(this.organumber).subscribe(data => {
-      console.log(data);
-      data.eventName = "Gestion des configs - " + data.eventName
-      this.transmissionService.dataTransmission(data);
-  }, err => {
-      console.log(err);
-      this.router.navigate(['error']);
-  })
-}
-
-  getAll(): void {
-    console.log("getAll")
-    this.configService.getAll(this.organumber).subscribe(data => {
-      console.log(data)
-      this.configs = data;
-    },
-      error => {
-        console.log('😢 Oh no!', error);
+    this.subscription = this.transmissionService.dataStream.subscribe(
+      data => {
+        console.log(data)
+        this.evenement = data
       });
   }
 
 
-  update(config:Config): void {
+  update(evenement: Evenement): void {
     console.log("update")
-    this.configService.updateParam(config).subscribe(data => {
+    this.evenementService.update(evenement).subscribe(data => {
       console.log(data)
-      this.getAll();
+      this.evenement = data;
     },
       error => {
         console.log('😢 Oh no!', error);

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ErrorComponent, InscriptionComponent, ConnexionComponent, GestionComponent, CreationComponent, GestionStandsComponent, GestionMajStandsComponent, GestionMajConfigComponent, GestionBenevolesComponent, GestionMajCreneauxComponent, GestionSMSComponent} from "./pages";
+import { ErrorComponent, InscriptionComponent, ConnexionComponent, GestionComponent, CreationComponent, GestionStandsComponent, GestionMajStandsComponent, GestionMajConfigComponent, GestionBenevolesComponent, GestionMajCreneauxComponent, GestionSMSComponent, GestionEvenementsComponent} from "./pages";
 
 const appRoutes: Routes = [
 // { path: '', redirectTo: '/', pathMatch: 'full' },
@@ -14,6 +14,7 @@ const appRoutes: Routes = [
   { path: 'gestionstands/:id', component: GestionStandsComponent},
   { path: 'gestionsms/:id', component: GestionSMSComponent},  
   { path: 'gestionbenevoles/:id', component: GestionBenevolesComponent},
+  { path: 'gestionevenements', component: GestionEvenementsComponent},
   { path: 'error', component: ErrorComponent},
 //  { path: '**', redirectTo: 'error'}
 ];

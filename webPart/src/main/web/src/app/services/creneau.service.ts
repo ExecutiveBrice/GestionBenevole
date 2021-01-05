@@ -14,11 +14,13 @@ export class CreneauService {
     let params = new HttpParams().set('eventId', ''+eventId+'');
     return this.http.get<Creneau[]>(this.apiUrl + '/getAll', {params, responseType: 'json'});
   }
-  ajout(creneau:Creneau) {
-    return this.http.post(this.apiUrl + '/', creneau, {responseType: 'json'});
+  ajout(creneau:Creneau, eventId: number) {
+    let params = new HttpParams().set('eventId', ''+eventId+'');
+    return this.http.post(this.apiUrl + '/', creneau, {params, responseType: 'json'});
   }
   update(creneau:Creneau) {
-    return this.http.put(this.apiUrl + '/', creneau, {responseType: 'json'});
+
+    return this.http.put(this.apiUrl + '/', creneau, { responseType: 'json'});
   }
   delete(creneau:Creneau) {
     let params = new HttpParams().set('id', ''+creneau.id+'');

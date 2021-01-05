@@ -1,8 +1,10 @@
 package com.brice.corp.model;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import java.util.List;
-
+import java.util.Objects;
 
 @Entity
 @Table(name = "STAND")
@@ -18,18 +20,20 @@ public class Stand {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @Column(name = "ETAT", nullable = false)
-    private Integer etat;
-
-    @Column(name = "ORDRE", nullable = false)
-    private Integer ordre;
-
     @Column(name = "BULLE")
     private String bulle;
 
-    @OneToMany(mappedBy="stand")
+    @Column(name = "ORDRE")
+    private Integer ordre;
+
+    @Column(name = "TYPE")
+    private Integer type;
+
+    @JsonIgnore
+    @OneToMany(mappedBy="stand", orphanRemoval=true)
     private List<Croisement> croisements;
 
+    @JsonIgnore
     @ManyToOne
     private Evenement evenement;
 
@@ -58,12 +62,12 @@ public class Stand {
         this.description = description;
     }
 
-    public Integer getEtat() {
-        return etat;
+    public Integer getType() {
+        return type;
     }
 
-    public void setEtat(Integer etat) {
-        this.etat = etat;
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public Integer getOrdre() {
@@ -96,5 +100,32 @@ public class Stand {
 
     public void setEvenement(Evenement evenement) {
         this.evenement = evenement;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Stand)) return false;
+        Stand stand = (Stand) o;
+        return Objects.equals(getId(), stand.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public String toString() {
+        return "Stand{" +
+                "id=" + id +
+                ", nom='" + nom + '\'' +
+                ", description='" + description + '\'' +
+                ", type=" + type +
+                ", ordre=" + ordre +
+                ", bulle='" + bulle + '\'' +
+                ", croisements=" + croisements +
+                ", evenement=" + evenement +
+                '}';
     }
 }

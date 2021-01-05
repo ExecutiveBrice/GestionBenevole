@@ -4,9 +4,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule} from "../app-routing.module";
 import { FormsModule} from "@angular/forms";
 import { OrderByPipe} from "../sort.pipe";
-import { TransmissionService, CroisementService, EvenementService, BenevoleService, StandService, MailService, ConfigService, ExcelService, CreneauService, SMSService} from "../services";
-
-import { ErrorComponent, InscriptionComponent, ConnexionComponent, GestionComponent, CreationComponent, GestionStandsComponent, GestionMajStandsComponent, GestionMajConfigComponent, GestionBenevolesComponent, GestionMajCreneauxComponent, GestionSMSComponent} from "../pages";
+import { ConfigService, ValidationService, TransmissionService, CroisementService, EvenementService, BenevoleService, StandService, MailService, ExcelService, CreneauService, SMSService} from "../services";
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { GestionEvenementsComponent, ModalContent, ErrorComponent, InscriptionComponent, ConnexionComponent, GestionComponent, CreationComponent, GestionStandsComponent, GestionMajStandsComponent, GestionMajConfigComponent, GestionBenevolesComponent, GestionMajCreneauxComponent, GestionSMSComponent} from "../pages";
 
 
 import { Ng2ImgMaxModule } from 'ng2-img-max';
@@ -17,7 +17,8 @@ import { Ng2ImgMaxModule } from 'ng2-img-max';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    Ng2ImgMaxModule
+    Ng2ImgMaxModule,
+    NgbModule
   ],
   exports: [
     AppRoutingModule
@@ -27,12 +28,13 @@ import { Ng2ImgMaxModule } from 'ng2-img-max';
     BenevoleService,
     StandService,
     MailService,
-    ConfigService,
     ExcelService,
     CreneauService,
     SMSService,
     EvenementService,
-    TransmissionService
+    TransmissionService,
+    ValidationService,
+    ConfigService
   ],
   declarations: [
     CreationComponent,
@@ -44,7 +46,9 @@ import { Ng2ImgMaxModule } from 'ng2-img-max';
     GestionBenevolesComponent,
     GestionMajCreneauxComponent,
     GestionMajConfigComponent,
+    GestionEvenementsComponent,
     ErrorComponent,
+    ModalContent,
     OrderByPipe
   ]
 })

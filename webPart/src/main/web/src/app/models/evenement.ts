@@ -8,4 +8,12 @@ export class Evenement {
   startDate: Date;
   endDate: Date;
   password: string;
+
+ 
+  rappelDate: Date;
+  validation: string;
+  retour: string;
+  signature: string;
+  rappel: string;
+  lock : boolean;
 }

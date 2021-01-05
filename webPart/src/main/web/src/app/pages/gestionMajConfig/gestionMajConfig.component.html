@@ -1,15 +1,117 @@
 <div class="row">
-  <div *ngFor="let config of configs | orderBy:'param':false " class="col-sm-6 ">
-    <div class="row panel">
-      <div class="col-sm-12 ">
-        {{config.param}} :
+
+  <div class="col-sm-12">
+    <div class="input-group mb-3 input-group-lg">
+      <div class="input-group-prepend">
+        <span class="input-group-text">eventName</span>
       </div>
-      <div class="col-sm-12 ">
-        <input type="text" [(ngModel)]="config.value" class="form-control" id="value">
-      </div>
-      <div class="col-sm-12 ">
-        <button type="button" class="btn btn-block btn-warning" (click)="update(config)">MAJ</button>
-      </div>
+      <input type="text" [(ngModel)]="evenement.eventName" class="form-control" id="eventName">
     </div>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="input-group mb-3 input-group-lg">
+      <div class="input-group-prepend">
+        <span class="input-group-text">contact</span>
+      </div>
+      <input type="text" [(ngModel)]="evenement.contact" class="form-control" id="contact">
+    </div>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="input-group mb-3 input-group-lg">
+      <div class="input-group-prepend">
+        <span class="input-group-text">contactEmail</span>
+      </div>
+      <input type="text" [(ngModel)]="evenement.contactEmail" class="form-control" id="contactEmail">
+    </div>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="input-group mb-3 input-group-lg">
+      <div class="input-group-prepend">
+        <span class="input-group-text">contactTel</span>
+      </div>
+      <input type="text" [(ngModel)]="evenement.contactTel" class="form-control" id="contactTel">
+    </div>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="input-group mb-3 input-group-lg">
+      <div class="input-group-prepend">
+        <span class="input-group-text">startDate</span>
+      </div>
+      <input type="date" [ngModel]="evenement.startDate | date:'yyyy-MM-dd'"
+        (ngModelChange)="evenement.startDate = $event" class="form-control" id="startDate">
+    </div>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="input-group mb-3 input-group-lg">
+      <div class="input-group-prepend">
+        <span class="input-group-text">endDate</span>
+      </div>
+      <input type="date" [ngModel]="evenement.endDate | date:'yyyy-MM-dd'" (ngModelChange)="evenement.endDate = $event"
+        class="form-control" id="endDate">
+    </div>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="input-group mb-3 input-group-lg">
+      <div class="input-group-prepend">
+        <span class="input-group-text">rappelDate</span>
+      </div>
+      <input type="date" [ngModel]="evenement.rappelDate | date:'yyyy-MM-dd'"
+        (ngModelChange)="evenement.rappelDate = $event" class="form-control" id="rappelDate">
+    </div>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="input-group mb-3 input-group-lg">
+      <div class="input-group-prepend">
+        <span class="input-group-text">password</span>
+      </div>
+      <input type="text" [(ngModel)]="evenement.password" class="form-control" id="password">
+    </div>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="input-group mb-3 input-group-lg">
+      <span class="input-group-text">validation</span>
+      <textarea [(ngModel)]="evenement.validation" id="w3review" name="w3review" rows="4" cols="100">
+       {{evenement.validation}}
+        </textarea>
+    </div>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="input-group mb-3 input-group-lg">
+      <span class="input-group-text">retour</span>
+      <textarea [(ngModel)]="evenement.retour" id="w3review" name="w3review" rows="4" cols="100">
+        {{evenement.retour}}
+         </textarea>
+    </div>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="input-group mb-3 input-group-lg">
+      <span class="input-group-text">signature</span>
+      <textarea [(ngModel)]="evenement.signature" id="w3review" name="w3review" rows="4" cols="100">
+        {{evenement.signature}}
+         </textarea>
+    </div>
+  </div>
+
+  <div class="col-sm-12">
+    <div class="input-group mb-3 input-group-lg">
+      <span class="input-group-text">rappel</span>
+      <textarea [(ngModel)]="evenement.rappel" id="w3review" name="w3review" rows="4" cols="100">
+        {{evenement.rappel}}
+         </textarea>
+    </div>
+  </div>
+
+  <div class="col-sm-12 ">
+    <button type="button" class="btn btn-block btn-warning" (click)="update(evenement)">MAJ</button>
   </div>
 </div>

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,13 +29,9 @@ public class BenevoleController {
 
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public ResponseEntity<Benevole> add(@RequestBody Benevole benevole) {
+    public ResponseEntity<Benevole> add(@RequestBody Benevole benevole, @RequestParam Integer eventId) {
         logger.debug("add Benevole");
-        benevoleService.persist(benevole);
-
-        if(benevole.getId() == null) {
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        benevoleService.add(benevole, eventId );
 
         return new ResponseEntity<>(benevole, HttpStatus.OK);
     }
@@ -43,10 +40,16 @@ public class BenevoleController {
     @RequestMapping(value = "/", method = RequestMethod.PUT)
     public ResponseEntity<Benevole> update(@RequestBody Benevole benevole) {
         logger.debug("update Benevole");
-        benevoleService.persist(benevole);
+        benevoleService.update(benevole);
         return new ResponseEntity<>(benevole, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/addCroisements", method = RequestMethod.PUT)
+    public ResponseEntity<Benevole> updateCroisements(@RequestParam Integer benevoleId, @RequestBody List<Integer> croisementListId) {
+        logger.debug("addCroisements "+croisementListId+" to Benevole"+benevoleId);
+        benevoleService.updateCroisements(benevoleId, croisementListId);
+        return new ResponseEntity<>(null,HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/byMail", method = RequestMethod.GET)
     public ResponseEntity<Benevole> getByMail(@RequestParam String email, @RequestParam Integer eventId) {
@@ -54,20 +57,21 @@ public class BenevoleController {
         Benevole benevole = benevoleService.findByEmail(email,eventId );
 
         if(benevole == null) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(benevole, HttpStatus.NO_CONTENT);
         }
 
         return new ResponseEntity<>(benevole, HttpStatus.OK);
     }
 
 
+
     @RequestMapping(value = "/getByEvenementId", method = RequestMethod.GET)
     public ResponseEntity<List<Benevole>> getByEvenementId(@RequestParam Integer eventId) {
         logger.debug("getAll Benevole");
-        List<Benevole> benevoles = benevoleService.findAll();
+        List<Benevole> benevoles = benevoleService.findByEvenementId(eventId);
 
         if(benevoles.isEmpty()) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(benevoles, HttpStatus.NO_CONTENT);
         }
 
         return new ResponseEntity<>(benevoles, HttpStatus.OK);
@@ -79,7 +83,7 @@ public class BenevoleController {
         List<Benevole> benevoles = benevoleService.findAll();
 
         if(benevoles.isEmpty()) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(new ArrayList<>(), HttpStatus.NO_CONTENT);
         }
 
         return new ResponseEntity<>(benevoles, HttpStatus.OK);

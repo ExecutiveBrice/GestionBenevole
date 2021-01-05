@@ -19,9 +19,8 @@
 
 
 <div *ngIf="!validation" class="row">
-
   <div class="col-sm-6 order-sm-1 ">
-    <div class="row" *ngIf="exist ">
+    <div class="row">
       <div *ngIf="plein" class="col-sm-12 ">
         <div class="alert alert-danger">
           <strong>Attention!</strong> <br>
@@ -29,34 +28,106 @@
           Choisissez en une autre ;)
         </div>
       </div>
+      <div class="col-sm-12" *ngIf="preparatifs.length > 0">
+        <div class="row bordered">
 
-      <div class="col-sm-12 ">
-        <div *ngFor="let preparatif of preparatifs | orderBy:'ordre':false" class="col-sm-11">
-        <button type="button" class="btn btn-block btn-warning" title="{{preparatif.Stand.bulle}}"
-          (click)="choisir(preparatif)">{{preparatif.Stand.nom}} -
-          {{preparatif.Creneau.plage}}<br><i>{{preparatif.Stand.bulle}}</i></button>
+          <div class="col-sm-12 " >
+            <button type="button" class="btn btn-block btn-info" (click)="choix = 'preparatifs'">Les préparatifs avant
+              l'évenement</button>
+          </div>
+
+          <div class="col-sm-12" *ngIf="choix == 'preparatifs'">
+            <div class="row">
+              <div *ngFor="let stand of preparatifs | orderBy:'ordre':false" class="col-sm-12">
+                <button type="button" class="btn btn-block btn-warning" title="{{stand.bulle}}"
+                  (click)="choixStand = stand.nom">{{stand.nom}}</button>
+                <div class="row" *ngIf="choixStand == stand.nom">
+                  <div class="col-sm-12 ">
+                    {{stand.bulle}}
+                  </div>
+                  <div *ngFor="let croisement of stand.croisements | orderBy:'creneau.ordre':false" class="col-sm-4">
+                    <button type="button" class="btn btn-block "
+                      [ngClass]="{'btn-success':croisement.selected === true, 'btn-danger':croisement.benevoles.length >= croisement.limite}"
+                      (click)="choisir(croisement)">{{croisement.creneau.plage}}<br>
+                      {{(croisement.limite - croisement.benevoles.length)==0?'Complet':(croisement.limite -
+                      croisement.benevoles.length)>1?'il reste '+(croisement.limite - croisement.benevoles.length)+'
+                      places':'il reste une place'}}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      
-      <div class="col-sm-12 ">
-        <button type="button" class="btn btn-block btn-info" (click)="choix = 'stand'">Je préfère choisir mon
-          stand</button>
-      </div>
 
-      <div class="col-sm-12" *ngIf="choix == 'stand'">
-        <div class="row">
-          <div *ngFor="let stand of stands | orderBy:'ordre':false" class="col-sm-11">
-            <button type="button" class="btn btn-block btn-secondary " title="{{stand.bulle}}"
-              (click)="choixStand = stand.nom">{{stand.nom}}</button>
-            <div class="row" *ngIf="choixStand == stand.nom">
-              <div class="col-sm-12 ">
-                {{stand.bulle}}
+      <div class="col-sm-12">
+        <div class="row bordered">
+          <div class="col-sm-12 ">
+            <button type="button" class="btn btn-block btn-info" (click)="choix = 'stand'">Je préfère choisir mon
+              stand</button>
+          </div>
+
+          <div class="col-sm-12" *ngIf="choix == 'stand'">
+            <div class="row">
+              <div *ngFor="let stand of stands | orderBy:'ordre':false" class="col-sm-12">
+                <button type="button" class="btn btn-block  " title="{{stand.bulle}}"
+                  (click)="choixStand = stand.nom">{{stand.nom}}</button>
+                <div class="row" *ngIf="choixStand == stand.nom">
+                  <div class="col-sm-12 ">
+                    {{stand.bulle}}
+                  </div>
+                  <div *ngFor="let croisement of stand.croisements | orderBy:'creneau.ordre':false" class="col-sm-4">
+                    <button type="button" class="btn btn-block "
+                      [ngClass]="{'btn-success':croisement.selected === true, 'btn-danger':croisement.benevoles.length >= croisement.limite}"
+                      (click)="choisir(croisement)">{{croisement.creneau.plage}}<br>
+                      {{(croisement.limite - croisement.benevoles.length)==0?'Complet':(croisement.limite -
+                      croisement.benevoles.length)>1?'il reste '+(croisement.limite - croisement.benevoles.length)+'
+                      places':'il reste une place'}}
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div *ngFor="let croisement of stand.Croisements | orderBy:'Creneau.ordre':false" class="col-sm-4">
-                <button type="button" class="btn btn-block btn-secondary"
-                  [ngClass]="{'btn-success':croisement.selected === true, 'btn-danger':croisement.Benevoles.length >= croisement.limite}"
-                  (click)="choisir(croisement)">{{croisement.Creneau.plage}}<br>
-                  {{(croisement.limite - croisement.Benevoles.length)==0?'Complet':(croisement.limite - croisement.Benevoles.length)>1?'il reste '+(croisement.limite - croisement.Benevoles.length)+' places':'il reste une place'}}
+            </div>
+          </div>
+
+
+
+          <div class="col-sm-12 ">
+            <button type="button" class="btn btn-block btn-info" (click)="choix = 'heure'">Le stand m'est égal mais je
+              suis disponible à :</button>
+          </div>
+
+          <div class="col-sm-12" *ngIf="choix == 'heure'">
+            <div class="row">
+              <div *ngFor="let croisement of sansChoix | orderBy:'creneau.ordre':false" class="col-sm-4">
+                <button type="button"
+                  [ngClass]="{'btn-success':croisement.selected === true, 'btn-danger':croisement.benevoles.length >= croisement.limite}"
+                  class="btn btn-block "
+                  (click)="choisir(croisement)">{{croisement.creneau.plage}}</button>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="col-sm-12 ">
+            <button type="button" class="btn btn-block btn-info" (click)="choix = 'besoin'">Là où vous en avez
+              besoin</button>
+          </div>
+
+
+          <div class="col-sm-12" *ngIf="choix == 'besoin'">
+            <div class="row">
+              <div *ngFor="let croisement of besoins | orderBy:'creneau.ordre':false" class="col-sm-4">
+                <button type="button"
+                  [ngClass]="{'btn-success':croisement.selected === true, 'btn-danger':croisement.benevoles.length >= croisement.limite}"
+                  title="{{croisement.stand.bulle}}" class="btn btn-block "
+                  (click)="choisir(croisement)">{{croisement.stand.nom}}<br>
+                  {{croisement.creneau.plage}}<br>
+                  {{(croisement.limite - croisement.benevoles.length)==0?'Complet':(croisement.limite -
+                  croisement.benevoles.length)>1?'il reste '+(croisement.limite - croisement.benevoles.length)+'
+                  places':'il
+                  reste une place'}}
                 </button>
               </div>
             </div>
@@ -64,87 +135,94 @@
         </div>
       </div>
 
-
-
-
-
-
-
-
-
-
-      <div class="col-sm-12 ">
-        <button type="button" class="btn btn-block btn-info" (click)="choix = 'heure'">Le stand m'est égal mais je
-          suis disponible à :</button>
-      </div>
-
-      <div class="col-sm-12" *ngIf="choix == 'heure'">
-        <div class="row">
-          <div *ngFor="let croisement of creneaux | orderBy:'Creneau.ordre':false" class="col-sm-4">
-            <button type="button"
-              [ngClass]="{'btn-success':croisement.selected === true, 'btn-danger':croisement.Benevoles.length >= croisement.limite}"
-              class="btn btn-block btn-secondary" (click)="choisir(croisement)">{{croisement.Creneau.plage}}</button>
+      <div class="col-sm-12 " *ngIf="postparatifs.length > 0">
+        <div class="row bordered">
+          <div class="col-sm-12 " >
+            <button type="button" class="btn btn-block btn-info" (click)="choix = 'postparatifs'">Les postparatifs
+              (après
+              l'évenement)</button>
           </div>
+
+          <div class="col-sm-12" *ngIf="choix == 'postparatifs'">
+            <div class="row">
+              <div *ngFor="let stand of postparatifs | orderBy:'ordre':false" class="col-sm-12">
+                <button type="button" class="btn btn-block btn-warning" title="{{stand.bulle}}"
+                  (click)="choixStand = stand.nom">{{stand.nom}}</button>
+                <div class="row" *ngIf="choixStand == stand.nom">
+                  <div class="col-sm-12 ">
+                    {{stand.bulle}}
+                  </div>
+                  <div *ngFor="let croisement of stand.croisements | orderBy:'creneau.ordre':false" class="col-sm-4">
+                    <button type="button" class="btn btn-block "
+                      [ngClass]="{'btn-success':croisement.selected === true, 'btn-danger':croisement.benevoles.length >= croisement.limite}"
+                      (click)="choisir(croisement)">{{croisement.creneau.plage}}<br>
+                      {{(croisement.limite - croisement.benevoles.length)==0?'Complet':(croisement.limite -
+                      croisement.benevoles.length)>1?'il reste '+(croisement.limite - croisement.benevoles.length)+'
+                      places':'il reste une place'}}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
-
-
-
-
-      <div class="col-sm-12 ">
-        <button type="button" class="btn btn-block btn-info" (click)="choix = 'besoin'">Là où vous en avez
-          besoin</button>
-      </div>
-
-
-      <div class="col-sm-12" *ngIf="choix == 'besoin'">
-        <div class="row">
-          <div *ngFor="let croisement of besoins | orderBy:'Creneau.ordre':false" class="col-sm-4">
-            <button type="button"
-              [ngClass]="{'btn-success':croisement.selected === true, 'btn-danger':croisement.Benevoles.length >= croisement.limite}"
-              title="{{croisement.Stand.bulle}}" class="btn btn-block btn-secondary"
-              (click)="choisir(croisement)">{{croisement.Stand.nom}}<br>
-              {{croisement.Creneau.plage}}<br>
-              {{(croisement.limite - croisement.Benevoles.length)==0?'Complet':(croisement.limite - croisement.Benevoles.length)>1?'il reste '+(croisement.limite - croisement.Benevoles.length)+' places':'il reste une place'}}
-            </button>
-          </div>
-        </div>
-      </div>
-
 
     </div>
   </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   <div class="col-sm-6 ">
-    <div *ngIf="exist" class="row">
+    <div class="row">
+
       <div class="col-sm-12 ">
         <h4>Votre planning :</h4>
-        <div *ngIf="chorale" class="alert alert-danger">
-          <strong>Attention!</strong> Attention Chorale à 11H !
-        </div>
         <div *ngIf="chevauchement" class="alert alert-danger">
           <strong>Attention!</strong> Vous vous êtes inscrit sur au moins 2 creneaux identique
           <br>(si vous êtes plusieurs, précisez le dans le commentaire).
         </div>
 
-        <div *ngIf="benevole.Croisements.length == 0" class="alert alert-success">
+        <div *ngIf="benevole.croisements != undefined && benevole.croisements.length == 0" class="alert alert-success">
           <strong>Pour ajouter un moment de bénévolat :</strong><br>
           Cliquez sur les choix à droite puis choisissez le créneau qui vous convient.<br>
           Vous pouvez bien évidement en choisir plusieurs
         </div>
-        <div *ngIf=" benevole.Croisements.length > 0">
-          <div *ngFor="let croisement of benevole.Croisements | orderBy:'Creneau.ordre':false" class="col-md-12">
+        <div *ngIf="benevole.croisements != undefined && benevole.croisements.length > 0">
+          <div *ngFor="let croisement of benevole.croisements | orderBy:'creneau.ordre':false" class="col-md-12">
             <i class="fa fa-trash" (click)="choisir(croisement)"></i>
-            {{croisement.Creneau.plage}} :
-            {{croisement.Stand.nom == "tous"?"N'importe quel stand":croisement.Stand.nom}}
+            {{croisement.creneau.plage}} :
+            {{croisement.stand.nom == "tous"?"N'importe quel stand":croisement.stand.nom}}
           </div>
         </div>
       </div>
-
-
-
-
-
 
       <div class="col-sm-12 ">
         <h4>Commentaire :</h4>
@@ -156,15 +234,12 @@
         <h4>Reponse :</h4>
         <input type="text" [(ngModel)]="benevole.reponse" readonly class="form-control">
       </div>
-      
+
       <div class="col-sm-12 ">
         <button type="button" class="btn btn-block btn-danger" (click)="validate()">Je valide mon
           inscription</button>
       </div>
 
-
     </div>
   </div>
-
-
 </div>

@@ -2,6 +2,7 @@ package com.brice.corp.service;
 
 
 import com.brice.corp.model.Creneau;
+import com.brice.corp.model.Evenement;
 import com.brice.corp.repositories.CreneauRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,35 @@ public class CreneauServiceImpl implements CreneauService {
     @Autowired
     private CreneauRepository creneauRepository;
 
+    @Autowired
+    private EvenementService evenementService;
+
 
     @Override
-    public void persist(Creneau child) {
-        creneauRepository.save(child);
+    public void persist(Creneau creneau) {
+        creneauRepository.save(creneau);
     }
+
+
+    @Override
+    public void addCreneau(Creneau creneau, Integer evenementId){
+        Evenement evenement = evenementService.findById(evenementId);
+
+        creneau.setEvenement(evenement);
+
+        persist(creneau);
+    }
+
+    @Override
+    public void updateCreneau(Creneau newCreneau){
+        Creneau creneau = findById(newCreneau.getId());
+
+        creneau.setOrdre(newCreneau.getOrdre());
+        creneau.setPlage(newCreneau.getPlage());
+        creneau.setChevauchement(newCreneau.getChevauchement());
+        persist(creneau);
+    }
+
 
     /**
      * {@inheritDoc}

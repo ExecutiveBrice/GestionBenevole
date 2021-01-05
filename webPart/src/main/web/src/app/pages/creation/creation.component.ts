@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ConfigService, EvenementService, TransmissionService } from '../../services';
+import { ConfigService, EvenementService, TransmissionService, MailService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Evenement } from '../../models';
+import { Evenement, Email } from '../../models';
 import QRCode from 'qrcode'
 
 @Component({
@@ -13,22 +13,19 @@ import QRCode from 'qrcode'
 export class CreationComponent implements OnInit {
 
   qrcode: Blob
-  using_address
-  managing_address
-  evenement: Evenement = {
-    contactEmail: "machin@truncate.com",
-    contact: "Truc BIDUL",
-    contactTel: "06 00 00 00",
-    endDate: new Date(),
-    eventName: "Ma fête à moi",
-    id: null,
-    password: "facil",
-    startDate: new Date()
-  };
+  header: string
+  using: string
+  managing: string
+
+  evenement: Evenement = new Evenement();
   new: boolean;
   ok: boolean;
+  params: Map<string, string>
+  error: boolean
+
 
   constructor(
+    public mailService: MailService,
     public configService: ConfigService,
     public evenementService: EvenementService,
     public transmissionService: TransmissionService,
@@ -36,51 +33,83 @@ export class CreationComponent implements OnInit {
 
 
   ngOnInit() {
-
+    this.params = JSON.parse(localStorage.getItem('allParams'));
+    console.log(this.params)
     this.new = true;
     this.ok = true;
-    this.getEvenement();
-
-
   }
 
+  oneEmpty(evenement: Evenement): boolean {
 
-  getEvenement() {
-    this.evenementService.getById(0).subscribe(data => {
-        console.log(data);
-        this.evenement = data;
-        this.transmissionService.dataTransmission(this.evenement);
-    }, err => {
-        console.log(err);
-    });
-}
-
-
+    var keyArray = ["contact", "eventName", "contactEmail", "startDate", "endDate", "password"]
+    for (let index = 0; index < keyArray.length; index++) {
+      if (evenement[keyArray[index]] == undefined || evenement[keyArray[index]] == null || evenement[keyArray[index]].length < 4) {
+        console.log(keyArray[index] + " is " + evenement[keyArray[index]])
+        return true
+      }
+    }
+    return false
+  }
 
   create(evenement: Evenement): void {
 
+    if (this.oneEmpty(evenement)) {
+      this.error = true
+    } else {
+      this.error = false
+      this.evenementService.ajout(evenement).subscribe(data => {
+        console.log(data)
+        console.log(evenement)
+        this.new = false
+        this.ok = true
 
-    this.evenementService.ajout(evenement).subscribe(data => {
-      console.log(data)
+        var using_address = this.params['url'] + "/connexion/" + data.id
+        var managing_address = this.params['url'] + "/gestion/" + data.id
 
-      this.new = false
-      this.ok = true
+        this.header = this.configService.completeTemplate(this.params['header'], evenement.eventName, using_address, managing_address)
+        this.using = this.configService.completeTemplate(this.params['using'], evenement.eventName, using_address, managing_address)
+        this.managing = this.configService.completeTemplate(this.params['managing'], evenement.eventName, using_address, managing_address)
 
-      this.using_address = "https://www.alod.fr/connexion/" + data.id
-      this.managing_address = "https://www.alod.fr/gestion/" + data.id
-      // With promises
-      QRCode.toDataURL(this.using_address)
-        .then(url => {
-          this.qrcode = url
-          console.log(url)
-        })
-        .catch(err => {
-          console.error(err)
-        })
-    },
-      error => {
-        console.log('😢 Oh no!', error);
-      });
+
+        // With promises
+        QRCode.toDataURL(using_address)
+          .then(url => {
+            this.qrcode = url
+            console.log(url)
+          })
+          .catch(err => {
+            console.error(err)
+          })
+
+
+        let email = new Email()
+        email.to = evenement.contactEmail
+        email.subject = this.configService.completeTemplate(this.params['title'], evenement.eventName, using_address, managing_address)
+
+        email.text = "Bonjour <br />";
+        email.text = email.text + this.header;
+        email.text = email.text + this.using;
+        email.text = email.text + "<br><br><a href=\"" + this.using + "\"><img src=\"" + this.qrcode + "\" /></a>";
+        email.text = email.text + this.managing;
+        email.text = email.text + this.params['signature']
+        console.log(email);
+
+
+
+        this.mailService.sendMail(email)
+          .subscribe(res => {
+            console.log("email sent to " + evenement.contactEmail);
+          }, err => {
+            console.log(err);
+          });
+      },
+        error => {
+          console.log('😢 Oh no!', error);
+        });
+
+
+    }
   }
+
 
 }

@@ -1,0 +1,94 @@
+<div class="row">
+  <div *ngFor="let evenement of evenements  | orderBy:'startDate':false" class="col-sm-12">
+    <button type="button" class="btn btn-block btn-info" (click)="choixEvenement(evenement.id)">
+      {{evenement.id}} - {{evenement.eventName}} {{evenement.startDate | date:'dd/MM/yyyy'}}</button>
+    <div class="col-sm-12" *ngIf="choix == evenement.id">
+
+
+
+
+
+
+      <div class="col-sm-6">
+        <div class="input-group mb-3 input-group-lg">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Evenement</span>
+          </div>
+          <input type="text" [(ngModel)]="evenement.eventName" class="form-control" id="eventname">
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="input-group mb-3 input-group-lg">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Nom Prenom</span>
+          </div>
+          <input type="text" [(ngModel)]="evenement.contact" class="form-control" id="contact">
+        </div>
+      </div>
+
+
+
+      <div class="col-sm-12">
+        <div class="input-group mb-3 input-group-lg">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Email</span>
+          </div>
+          <input type="text" [(ngModel)]="evenement.contactEmail" class="form-control" id="contactemail">
+        </div>
+      </div>
+
+
+
+
+
+      <div class="col-sm-4">
+        <div class="input-group mb-3 input-group-lg">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Début</span>
+          </div>
+          <input type="date" [ngModel]="evenement.startDate | date:'yyyy-MM-dd'"
+            (ngModelChange)="evenement.startDate = $event" class="form-control" id="startDate">
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="input-group mb-3 input-group-lg">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Rappel</span>
+          </div>
+          <input type="date" [ngModel]="evenement.rappelDate | date:'yyyy-MM-dd'"
+            (ngModelChange)="evenement.rappelDate = $event" class="form-control" id="rappelDate">
+        </div>
+      </div>
+
+      <div class="col-sm-4">
+        <div class="input-group mb-3 input-group-lg">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Fin</span>
+          </div>
+          <input type="date" [ngModel]="evenement.endDate | date:'yyyy-MM-dd'"
+            (ngModelChange)="evenement.endDate = $event" class="form-control" id="endDate">
+        </div>
+      </div>
+
+      <div class="col-sm-6">
+        <div class="input-group mb-3 input-group-lg">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Mot de passe</span>
+          </div>
+          <input type="text" [(ngModel)]="evenement.password" class="form-control" id="password">
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <button type="button" class="btn btn-block btn-warning" (click)="update(evenement)">
+          Mettre à jour</button>
+      </div>
+      <div class="col-sm-3">
+        <button type="button" class="btn btn-block btn-alert" (click)="delete(evenement)">
+          Supprimer</button>
+      </div>
+
+
+
+    </div>
+  </div>
+</div>

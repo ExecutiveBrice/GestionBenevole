@@ -9,3 +9,5 @@ export * from './gestionMajCreneaux/gestionMajCreneaux.component';
 export * from './gestionMajStands/gestionMajStands.component';
 export * from './gestionStands/gestionStands.component';
 export * from './gestionSMS/gestionSMS.component';
+export * from './GestionEvenements/GestionEvenements.component';
+export * from './modal/modal.component';

@@ -1,7 +1,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { BenevoleService } from '../../services';
-import { TransmissionService, CroisementService, StandService, MailService, EvenementService } from '../../services';
+import { ValidationService, TransmissionService, CroisementService, StandService, MailService, EvenementService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Stand } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -15,7 +15,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 export class GestionStandsComponent implements OnInit {
   stands: Stand[];
-  organumber:number;
+  organumber: number;
   choix: string;
 
   constructor(
@@ -27,6 +27,7 @@ export class GestionStandsComponent implements OnInit {
     public transmissionService: TransmissionService,
     public standService: StandService,
     public mailService: MailService,
+    public validationService: ValidationService,
     public sanitizer: DomSanitizer) {
 
   }
@@ -34,11 +35,8 @@ export class GestionStandsComponent implements OnInit {
 
   ngOnInit() {
     this.organumber = parseInt(this.route.snapshot.paramMap.get('id'));
+    this.validationService.testGestion(this.organumber)
 
-    console.log(this.organumber)
-    if (!this.organumber || isNaN(this.organumber) || this.organumber < 1) {
-      this.router.navigate(['/error']);
-    }
 
 
     this.stands = [];
@@ -46,30 +44,27 @@ export class GestionStandsComponent implements OnInit {
     this.choix = "";
     this.getAll();
 
-    this.getEvenement();
-
-
   }
-
-
-  getEvenement() {
-    this.evenementService.getById(this.organumber).subscribe(data => {
-      console.log(data);
-      data.eventName = "Gestion par Stand - " + data.eventName
-      this.transmissionService.dataTransmission(data);
-  }, err => {
-      console.log(err);
-      this.router.navigate(['error']);
-    });
-}
 
 
   getAll(): void {
     console.log("find")
-    this.standService.getAll(this.organumber).subscribe(data => {
-      console.log(data)
+    this.standService.getAll(this.organumber).subscribe(stands => {
+      console.log(stands)
 
-      this.stands = data;
+      this.stands = stands;
+
+      stands.forEach(stand => {
+        stand.croisements = []
+        this.croisementService.getByStand(stand.id).subscribe(croisements => {
+          console.log(croisements)
+          stand.croisements = croisements
+        },
+          error => {
+            console.log('😢 Oh no!', error);
+          });
+
+      });
     },
       error => {
         console.log('😢 Oh no!', error);

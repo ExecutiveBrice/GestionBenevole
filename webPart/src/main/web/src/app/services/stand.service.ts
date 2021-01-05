@@ -19,8 +19,9 @@ export class StandService {
     let params = new HttpParams().set('id', ''+id+'').set('eventId', ''+eventId+'');
     return this.http.get(this.apiUrl + '/getById', {params, responseType: 'json'});
   }
-  ajout(stand:Stand) {
-    return this.http.post(this.apiUrl + '/', stand, {responseType: 'json'});
+  ajout(stand:Stand, eventId: number) {
+    let params = new HttpParams().set('eventId', ''+eventId+'');
+    return this.http.post(this.apiUrl + '/', stand, {params, responseType: 'json'});
   }
   update(stand:Stand) {
     return this.http.put(this.apiUrl + '/', stand, {responseType: 'json'});

@@ -1,16 +1,23 @@
 <div class="row" *ngIf="new">
 
+  <div *ngIf="error" class="col-sm-12 ">
+    <div class="alert alert-warning">
+      <strong>Attention</strong><br>
+      Il manque au moins un champ à saisir!
+    </div>
+  </div>
+
 
   <div class="col-sm-6">
     <div class="input-group mb-3 input-group-lg">
       <div class="input-group-prepend">
         <span class="input-group-text">Email</span>
       </div>
-      <input type="text" [(ngModel)]="evenement.contactEmail" class="form-control" id="contactemail">
+      <input type="text" [(ngModel)]="evenement.contactEmail" class="form-control" id="contactemail" placeholder="machin@truc.fr" required>
     </div>
   </div>
   <div class="col-sm-6">
-    C'est sur cette adresse mail que seront envoyé les mails des bénévoles
+    C'est à cette adresse mail que seront envoyé les mails des bénévoles
   </div>
 
 
@@ -19,20 +26,33 @@
       <div class="input-group-prepend">
         <span class="input-group-text">Nom Prenom</span>
       </div>
-      <input type="text" [(ngModel)]="evenement.contact" class="form-control" id="contact">
+      <input type="text" [(ngModel)]="evenement.contact" class="form-control" id="contact" placeholder="Sarah CONOR" required>
     </div>
   </div>
   <div class="col-sm-6">
     C'est le contact qui sera affiché sur le site pour les bénévoles
   </div>
 
+  <div class="col-sm-6">
+    <div class="input-group mb-3 input-group-lg">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Tel</span>
+      </div>
+      <input type="text" [(ngModel)]="evenement.contactTel" class="form-control" id="contactTel" placeholder="066666666666666">
+    </div>
+  </div>
+  <div class="col-sm-6">
+    Votre numéro de téléphone, enfin c'est pas obligé
+  </div>
 
+
+  
   <div class="col-sm-6">
     <div class="input-group mb-3 input-group-lg">
       <div class="input-group-prepend">
         <span class="input-group-text">Evenement</span>
       </div>
-      <input type="text" [(ngModel)]="evenement.eventName" class="form-control" id="eventname">
+      <input type="text" [(ngModel)]="evenement.eventName" class="form-control" id="eventname" placeholder="Fête de l'école 2021" required>
     </div>
   </div>
   <div class="col-sm-6">
@@ -49,7 +69,7 @@
         <span class="input-group-text">Début</span>
       </div>
       <input type="date" [ngModel]="evenement.startDate | date:'yyyy-MM-dd'"
-        (ngModelChange)="evenement.startDate = $event" class="form-control" id="startDate">
+        (ngModelChange)="evenement.startDate = $event" class="form-control" id="startDate" required>
     </div>
   </div>
   <div class="col-sm-6">
@@ -64,13 +84,13 @@
         <span class="input-group-text">Fin</span>
       </div>
       <input type="date" [ngModel]="evenement.endDate | date:'yyyy-MM-dd'" (ngModelChange)="evenement.endDate = $event"
-        class="form-control" id="endDate">
+        class="form-control" id="endDate" required>
     </div>
   </div>
   <div class="col-sm-6">
     C'est la date ou tout est terminé, ou le contenu des informations des bénévoles sera supprimé
     <br />
-    <I>NB : Prévoire large, pour permetre éventuellement de recontacter vos bénévoles en cas de fête de remerciement ou
+    <I>NB : Prévoire large, pour permetre éventuellement de recontacter vos bénévoles en cas de fête de remerciements ou
       de problème (COVID,... )</I>
   </div>
 
@@ -80,7 +100,7 @@
       <div class="input-group-prepend">
         <span class="input-group-text">Mot de passe</span>
       </div>
-      <input type="text" [(ngModel)]="evenement.password" class="form-control" id="password">
+      <input type="password" [(ngModel)]="evenement.password" class="form-control" id="password" minlength="4" required>
     </div>
   </div>
   <div class="col-sm-6">
@@ -101,24 +121,18 @@
 
 <div class="row" *ngIf="!new && ok">
   <div class="col-sm-12 ">
-    Le gestionnaire de l'évenement <strong>'{{evenement.eventName}}'</strong> à bien été créée!
-    <br />
-    <br />
-    <br />
+    <div [innerHTML]="header"></div>
+
   </div>
 
   <div class="col-sm-6 ">
-    <u>L'adresse d'utilisation est :</u>
-    <br />
-    <a href="{{using_address}}">{{using_address}}</a>
-    <br />
-    <br />
+    <div [innerHTML]="using"></div>
+
     <img src="{{qrcode}}" />
   </div>
   <div class="col-sm-6 ">
-    <u>L'adresse de gestion est :</u>
-    <br />
-    <a href="{{managing_address}}">{{managing_address}}</a>
+    <div [innerHTML]="managing"></div>
+
   </div>
 
 </div>

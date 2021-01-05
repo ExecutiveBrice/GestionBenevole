@@ -1,26 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
-
-body {background-color : rgb(217, 217, 217);}
-
-.white {
-    color:rgb(124, 124, 124);
+body {
+    background-color : rgb(217, 217, 217);
 }
 
-.container {
-
-    max-width: 1500px;
-
+[class*='row'] {
+    margin: 0px;
 }
 
-.fa-heart {
-    color: hotpink;
-  }
+[class*='col-'] {
+    float: left;
+    padding: 5px;
+}
 
-  a { cursor: pointer }
-
-h2 {
-    font-weight: bold;
-    
-    font-family: "Comic Sans MS";
-    text-shadow: 2px 2px rgb(0, 0, 0);
+.bordered {
+    background-color: #9b9b9b;
+    border-radius: 10px;
+    margin: 5px;
+    font-size: small;
 }

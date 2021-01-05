@@ -10,9 +10,21 @@ import java.util.List;
  */
 public interface CroisementService {
 
-    void persist(Croisement parent);
+    void persist(Croisement croisement);
 
-    List<Croisement> findByCreneauGroupeAndCreneauEvenementId(Integer groupe, Integer eventId);
+    List<Croisement> findByEtatAndEvenementId(Integer etat, Integer eventId);
 
     List<Croisement> findAll();
+
+    void delete(Integer croisementId);
+
+    Croisement findById(Integer croisementId);
+
+    List<Croisement> getCroisementByStand(Integer standId);
+
+    List<Croisement> getCroisementByCreneau(Integer creneauId);
+
+    List<Croisement> getCroisementByBenveole(Integer benevoleId);
+
+
 }

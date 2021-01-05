@@ -1,22 +1,16 @@
 package com.brice.corp.service;
 
-
-import com.brice.corp.model.Config;
+import com.brice.corp.model.Evenement;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Classe des services portant sur les IG
  */
 public interface ConfigService {
 
-    void persist(Config child);
 
-    Config getByParamAndEvenementId(String param, Integer evenementId);
+    Map<String, String> getParams();
 
-    List<Config> findByEvenementId(Integer evenementId);
-
-    List<Config> findAll();
-
-    Config findById(Integer childId);
 }

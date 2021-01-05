@@ -19,22 +19,22 @@
           {{benevole.email}} - {{benevole.telephone}}
         </div>
         <div class="col-sm-12">
-          <textarea [(ngModel)]="benevole.reponse" rows="4" cols="50"></textarea>
+          <textarea [(ngModel)]="benevole.reponse" rows="4" cols="40"></textarea>
         </div>
         <div class="col-sm-12">
           <button type="button" class="btn btn-block btn-info" (click)="send(benevole)">Envoyer la réponse au
             commentaire</button>
         </div>
 
-        <div *ngFor="let benecroisement of benevole.Croisements | orderBy:'Stand.ordre':false"
+        <div *ngFor="let benecroisement of benevole.croisements | orderBy:'stand.ordre':false"
           class="col-sm-12 dropdown">
           <button type="button" class="btn btn-block btn-warning dropdown-toggle"
-            data-toggle="dropdown">{{benecroisement.Stand.nom == "tous"?"N'importe quel stand":benecroisement.Stand.nom}}
-            à {{benecroisement.Creneau.plage}}</button>
+            data-toggle="dropdown">{{benecroisement.stand.nom == "tous"?"N'importe quel stand":benecroisement.stand.nom}}
+            à {{benecroisement.creneau.plage}}</button>
           <div class="dropdown-menu scrollable-menu">
-            <a class="dropdown-item" *ngFor="let croisement of croisements  | orderBy:'Creneau.ordre':false"
-              (click)="choisir(benevole, benecroisement, croisement)">{{croisement.Stand.nom == "tous"?"N'importe quel stand":croisement.Stand.nom}}
-              à {{croisement.Creneau.plage}} ({{croisement.Benevoles.length}}/{{croisement.limite}})</a>
+            <a class="dropdown-item" *ngFor="let croisement of croisements  | orderBy:'creneau.ordre':false"
+              (click)="choisir(benevole, benecroisement, croisement)">{{croisement.stand.nom == "tous"?"N'importe quel stand":croisement.stand.nom}}
+              à {{croisement.creneau.plage}} ({{croisement.benevoles.length}}/{{croisement.limite}})</a>
             <a class="dropdown-item" (click)="choisir(benevole, benecroisement, null)">
               <font color="red"><b>Suppression</b></font>
             </a>
@@ -45,9 +45,9 @@
           <button type="button" class="btn btn-block btn-warning dropdown-toggle"
             data-toggle="dropdown">Nouveau</button>
           <div class="dropdown-menu scrollable-menu">
-            <a class="dropdown-item" *ngFor="let croisement of croisements  | orderBy:'Creneau.ordre':false"
-              (click)="choisir(benevole, null, croisement)">{{croisement.Stand.nom == "tous"?"N'importe quel stand":croisement.Stand.nom}}
-              à {{croisement.Creneau.plage}} ({{croisement.Benevoles.length}}/{{croisement.limite}})</a>
+            <a class="dropdown-item" *ngFor="let croisement of croisements  | orderBy:'creneau.ordre':false"
+              (click)="choisir(benevole, null, croisement)">{{croisement.stand.nom == "tous"?"N'importe quel stand":croisement.stand.nom}}
+              à {{croisement.creneau.plage}} ({{croisement.benevoles.length}}/{{croisement.limite}})</a>
           </div>
         </div>
       </div>

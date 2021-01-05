@@ -2,12 +2,14 @@
 
   <div class="mx-auto flex-column" id="navbar">
     <ul class="navbar-nav mx-auto w-100 d-flex justify-content-center">
-      <li class="nav-item">
-        <a class="nav-link active" href="./{{evenement.id}}">{{evenement.eventName}}</a>
+      <li class="nav-item gros_titre">
+        {{evenement.eventName}}
       </li>
     </ul>
+  </div>
 
-
+  <div *ngIf="isGestion">
+    <button type="button" class="btn btn-block btn-warning" [routerLink]="['/gestion/', evenement.id]">Gestion</button>
   </div>
 </nav>
 <!-- main app container -->
@@ -15,19 +17,18 @@
 <div class="container">
   <router-outlet></router-outlet>
 </div>
-<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+<nav *ngIf="canSendAlerte" class="navbar navbar-expand-md bg-dark navbar-dark">
 
   <div class="navbar-expand m-auto navbar-text">
     {{evenement.contact}} - {{evenement.contactTel}} - {{evenement.contactEmail}}
   </div>
 
-
   <div *ngIf="!mail">
     <button type="button" class="btn btn-block btn-danger" (click)="mail = !mail">Nous envoyer un email</button>
   </div>
   <div *ngIf="mail">
-    <textarea rows="3" [(ngModel)]="email.text" placeholder="Un problème, une question, une remarque,..."
+    <textarea rows="3" [(ngModel)]="text" placeholder="Un problème, une question, une remarque,..."
       class="form-control"></textarea>
-    <button type="button" class="btn btn-block btn-danger" (click)="envoiMail(email)">Envoi de l'email</button>
+    <button type="button" class="btn btn-block btn-danger" (click)="envoiMail(text)">Envoi de l'email</button>
   </div>
 </nav>

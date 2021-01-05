@@ -1,8 +1,11 @@
 package com.brice.corp.model;
 
-import javax.persistence.*;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -16,7 +19,7 @@ public class Creneau {
     @Column(name = "PLAGE", nullable = false)
     private String plage;
 
-    @Column(name = "ORDRE", nullable = false)
+    @Column(name = "ORDRE")
     private Integer ordre;
 
     @Column(name = "GROUPE")
@@ -25,6 +28,7 @@ public class Creneau {
     @Column(name = "CHEVAUCHEMENT")
     private Integer[] chevauchement;
 
+    @JsonIgnore
     @ManyToOne
     private Evenement evenement;
 
@@ -74,5 +78,31 @@ public class Creneau {
 
     public void setEvenement(Evenement evenement) {
         this.evenement = evenement;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Creneau)) return false;
+        Creneau creneau = (Creneau) o;
+        return Objects.equals(getId(), creneau.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public String toString() {
+        return "Creneau{" +
+                "id=" + id +
+                ", plage='" + plage + '\'' +
+                ", ordre=" + ordre +
+                ", groupe=" + groupe +
+                ", chevauchement=" + Arrays.toString(chevauchement) +
+                ", evenement=" + evenement +
+                '}';
     }
 }

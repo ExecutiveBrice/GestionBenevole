@@ -1,10 +1,11 @@
 
 import { Component, OnInit } from '@angular/core';
-import { BenevoleService, EvenementService, TransmissionService } from '../../services';
-import { CroisementService, StandService, MailService, ConfigService } from '../../services';
+import { ValidationService, BenevoleService, EvenementService, TransmissionService } from '../../services';
+import { CroisementService, StandService, MailService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Benevole, Croisement, Stand, Email, Evenement } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-inscription',
@@ -15,110 +16,87 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class InscriptionComponent implements OnInit {
 
   organumber: number;
-  new: boolean;
   validation: boolean;
-  nouveau: boolean;
-  exist: boolean;
   choix: String;
-  creneaux: Croisement[];
+  sansChoix: Croisement[];
   stands: Stand[];
   chevauchement: boolean;
-  chorale: boolean;
   besoins: Croisement[];
-  preparatifs: Croisement[];
+  preparatifs: Stand[];
+  postparatifs: Stand[];
   croisements: Croisement[];
   benevole: Benevole;
-  email: Email = {
-    to: "",
-    subject: "",
-    text: ""
-  }
   plein: boolean;
   emailText1: string;
   emailText2: string;
   choixStand: string;
+  evenement: Evenement;
+  subscription = new Subscription()
+  params: Map<string, string>
 
 
-  constructor(public benevoleService: BenevoleService,
+
+  constructor(
+    public benevoleService: BenevoleService,
     public evenementService: EvenementService,
     public route: ActivatedRoute,
     public transmissionService: TransmissionService,
     public router: Router,
-    public configService: ConfigService,
     public croisementService: CroisementService,
     public standService: StandService,
     public mailService: MailService,
-    public sanitizer: DomSanitizer) {
-
-
-  }
+    public validationService: ValidationService,
+    public sanitizer: DomSanitizer) { }
 
   ngOnInit() {
-    this.organumber = parseInt(this.route.snapshot.paramMap.get('id'));
-    console.log(this.organumber)
-    if (!this.organumber || isNaN(this.organumber) || this.organumber < 1) {
-      this.router.navigate(['/error']);
-    }
+    this.params = JSON.parse(localStorage.getItem('allParams'));
 
-    
+    this.organumber = parseInt(this.route.snapshot.paramMap.get('id'));
+    this.validationService.testCommun(this.organumber)
+
+    this.subscription = this.transmissionService.dataStream.subscribe(
+      data => {
+        console.log(data)
+        this.evenement = data
+      });
+
     if (localStorage.getItem('user')) {
       this.benevole = JSON.parse(localStorage.getItem('user'));
+      console.log(this.benevole)
+      this.actualiseBenevole()
     } else {
-      this.router.navigate(['/connexion/'+ this.organumber ]);
+      this.router.navigate(['/connexion/' + this.organumber]);
     }
 
-
     this.plein = false;
-    this.preparatifs = [];
 
-    this.stands = [];
-    this.besoins = [];
-    this.creneaux = [];
     this.validation = false;
-    this.exist = false;
     this.chevauchement = false;
-    this.chorale = false;
-    this.getCreneaux();
+
+
     this.getStand();
-    this.getPreparatifs();
-
-    this.bloquage();
-    this.getTexts()
-
-    this.getEvenement();
-
-
   }
 
 
-  getEvenement() {
-    this.evenementService.getById(this.organumber).subscribe(data => {
-        console.log(data);
-        this.transmissionService.dataTransmission(data);
-    }, err => {
-        console.log(err);
-        this.router.navigate(['error']);
-    });
-}
 
 
-  bloquage() {
-    this.configService.getParam('lock', this.organumber)
-      .subscribe(data => {
-        console.log("lock");
-        console.log(data);
-        if (data.value == "true") {
-          this.router.navigate(['/404']);
+  actualiseBenevole(): void {
+    this.benevoleService.getByMail(this.benevole.email, this.organumber).subscribe(benevole => {
+      console.log(benevole)
+      benevole.croisements = []
+      this.benevole = benevole;
+
+      this.croisementService.getByBenevole(benevole.id).subscribe(croisements => {
+        console.log(croisements)
+        if(croisements == null){
+          this.benevole.croisements = []
+        }else{
+          this.benevole.croisements = croisements;
         }
-      }, err => {
-        console.log(err);
-      });
-  }
-
-
-  getCreneaux(): void {
-    this.croisementService.getByGroup(1, this.organumber).subscribe(data => {
-      this.creneaux = data['croisements']
+      },
+        error => {
+          console.log('😢 Oh no!', error);
+        });
     },
       error => {
         console.log('😢 Oh no!', error);
@@ -126,61 +104,117 @@ export class InscriptionComponent implements OnInit {
   }
 
 
-  getPreparatifs(): void {
-    console.log("getPreparatifs")
-    this.croisementService.getByGroup(5, this.organumber).subscribe(data => {
-      console.log(data)
-      this.preparatifs = data['croisements']
-    },
-      error => {
-        console.log('😢 Oh no!', error);
-      });
-  }
+
 
 
   updateListe(benevole: Benevole): void {
     console.log("updateListe")
     console.log(benevole)
-    this.updateCroisementListe(this.preparatifs)
-    this.updateCroisementListe(this.creneaux)
+
+
+    this.postparatifs.forEach(stand => {
+      this.updateCroisementListe(stand.croisements)
+    });
+
+    this.preparatifs.forEach(stand => {
+      this.updateCroisementListe(stand.croisements)
+    });
+
+    this.updateCroisementListe(this.sansChoix)
     this.stands.forEach(stand => {
       this.updateCroisementListe(stand.croisements)
     });
-    this.getBesoin();
+
     this.calculChevauchement(benevole)
   }
 
 
-  getBesoin(): void {
-    this.creneaux.forEach(croisement => {
-      if (croisement.besoin == true) {
-        this.besoins.push(croisement);
-      }
-    })
-    this.stands.forEach(stand => {
-      stand.croisements.forEach(croisement => {
-        if (croisement.besoin == true) {
-          this.besoins.push(croisement);
-        }
-      })
-    });
-  }
-
 
   getStand(): void {
-    this.standService.getAll(this.organumber).subscribe(data => {
-      data.forEach(stand => {
-        if (stand.etat == 2 || stand.etat == 3) {
-          this.croisementService.getByStand(stand.id).subscribe(data => {
-            stand.croisements = data
-            this.stands.push(stand)
-          },
-            error => {
-              console.log('😢 Oh no!', error);
-            });
-          console.log("stands")
-          console.log(this.stands)
-        }
+    this.besoins = []
+    this.sansChoix = []
+    this.preparatifs = []
+    this.postparatifs = []
+    this.stands = []
+    this.standService.getAll(this.organumber).subscribe(stands => {
+      console.log(stands)
+      stands.forEach(stand => {
+
+
+        stand.croisements = []
+        this.croisementService.getByStand(stand.id).subscribe(croisements => {
+          console.log(croisements)
+
+          if (croisements != null) {
+            stand.croisements = croisements
+
+
+
+            if (stand.type == 2 || stand.type == 3) {
+
+
+              stand.croisements.forEach(croisement => {
+                if (croisement.besoin == true) {
+
+                  this.besoins.push(croisement);
+                }
+                croisement.stand = stand
+              })
+
+
+              this.stands.push(stand)
+              console.log("stands")
+              console.log(this.stands)
+
+            } else if (stand.type == 1) {
+              stand.croisements.forEach(croisement => {
+                if (croisement.besoin == true) {
+                  this.besoins.push(croisement);
+                }
+                croisement.stand = stand
+                this.sansChoix.push(croisement)
+              })
+
+              console.log("sansChoix")
+              console.log(this.sansChoix)
+
+            } else if (stand.type == 5) {
+              stand.croisements.forEach(croisement => {
+                if (croisement.besoin == true) {
+                  this.besoins.push(croisement);
+                }
+                croisement.stand = stand
+                this.preparatifs.push(stand)
+              })
+
+              console.log("preparatifs")
+              console.log(this.preparatifs)
+
+            } else if (stand.type == 6) {
+              stand.croisements.forEach(croisement => {
+                if (croisement.besoin == true) {
+                  this.besoins.push(croisement);
+                }
+                croisement.stand = stand
+                this.postparatifs.push(stand)
+              })
+
+              console.log("postparatifs")
+              console.log(this.postparatifs)
+            }
+
+          }
+
+        },
+          error => {
+            console.log('😢 Oh no!', error);
+          });
+
+
+
+
+
+
       })
     },
       error => {
@@ -209,17 +243,15 @@ export class InscriptionComponent implements OnInit {
   addCroisements(benevole: Benevole): void {
     console.log("addCroisements")
     console.log(benevole)
+    let croisementsList = []
     benevole.croisements.forEach(croisement => {
-      croisement.benevoles = []
+      croisementsList.push(croisement.id)
     });
     benevole.email = benevole.email.toLowerCase();
-    this.benevoleService.addCroisements(benevole).subscribe(data => {
+    this.benevoleService.addCroisements(benevole.id, croisementsList).subscribe(data => {
       console.log(data)
-      this.exist = true;
     },
       error => {
-        this.exist = false;
-        this.new = false;
         console.log('😢 Oh no!', error);
       });
   }
@@ -244,19 +276,19 @@ export class InscriptionComponent implements OnInit {
     }
 
     if (croisement.benevoles.length < croisement.limite) {
-      console.log("croisement.Benevoles.length < croisement.limite")
+      console.log("croisement.benevoles.length < croisement.limite")
       this.plein = false;
       if (!added) {
         croisement.selected = true;
         this.benevole.croisements.push(croisement);
         croisement.benevoles.push(this.benevole);
         if (croisement.benevoles.length > croisement.limite) {
-          console.log("croisement.Benevoles.length < croisement.limite")
+          console.log("croisement.Benevoles.length > croisement.limite")
           this.plein = true;
         }
       }
     } else {
-      console.log("croisement.Benevoles.length > croisement.limite")
+      console.log("! croisement.benevoles.length < croisement.limite")
       this.plein = true;
     }
     this.calculChevauchement(this.benevole)
@@ -281,36 +313,53 @@ export class InscriptionComponent implements OnInit {
   }
 
 
-  validate(): void {
-    this.validation = true;
-    this.addCroisements(this.benevole);
-    this.benevoleService.update(this.benevole).subscribe(data => {
+  updateBenevoleAttributes(benevole: Benevole) {
+
+    this.benevoleService.update(benevole).subscribe(data => {
       console.log(data)
-      this.exist = true;
-
-
-      this.email.to = this.benevole.email
-      this.email.subject = "Validation de participation"
-      this.email.text = this.emailText1;
-      this.benevole.croisements.sort((a, b) => (a.creneau.ordre > b.creneau.ordre) ? 1 : ((b.creneau.ordre > a.creneau.ordre) ? -1 : 0));
-      this.benevole.croisements.forEach(croisement => {
-        this.email.text = this.email.text + (croisement.stand.nom == "tous" ? "N'importe quel stand" : croisement.stand.nom) + " - " + croisement.creneau.plage + "<br>"
-      });
-
-      if (this.benevole.gateaux) {
-        this.email.text = this.email.text + "\nVous avez également proposé d'apporter :<br>"
-        this.email.text = this.email.text + this.benevole.gateaux + "<br>"
-      }
-      this.email.text = this.email.text + this.emailText2;
-      this.envoiMail(this.email)
     },
       error => {
-        this.exist = false;
-        this.new = false;
         console.log('😢 Oh no!', error);
       });
   }
 
+  validate(): void {
+    this.validation = true;
+    this.addCroisements(this.benevole);
+    this.updateBenevoleAttributes(this.benevole);
+    var email = new Email();
+    email.to = this.benevole.email
+    email.subject = "Validation de participation pour l'evenement : "+this.evenement.eventName
+    email.text = "Bonjour,<br />"+this.evenement.validation + "<br />";
+
+    console.log(this.benevole.croisements)
+    this.benevole.croisements.sort((a, b) => (a.creneau.ordre > b.creneau.ordre) ? 1 : ((b.creneau.ordre > a.creneau.ordre) ? -1 : 0));
+    this.benevole.croisements.forEach(croisement => {
+      email.text = email.text + (croisement.stand.nom == "tous" ? "N'importe quel stand" : croisement.stand.nom) + " - " + croisement.creneau.plage + "<br />"
+    });
+    email.text = email.text +"<br />"
+    email.text = email.text + this.evenement.retour;
+    email.text = email.text +"<br />"
+    email.text = email.text + this.evenement.signature;
+
+    email.text = this.completeTemplate(email.text)
+    this.envoiMail(email)
+
+  }
+
+  completeTemplate(text: string): string {
+    var using_address = this.params['url'] + "/connexion/" + this.evenement.id
+
+    while (text.match("<event_name>")) {
+      text = text.replace("<event_name>", this.evenement.eventName)
+    }
+
+    while (text.match("<using_address>")) {
+      text = text.replace("<using_address>", using_address)
+    }
+
+    return text
+  }
 
   envoiMail(email: Email) {
     this.mailService.sendMail(email)
@@ -322,21 +371,6 @@ export class InscriptionComponent implements OnInit {
       });
   }
 
-
-  getTexts() {
-    this.configService.getParam("validation1", this.organumber).subscribe(data => {
-      console.log(data.value);
-      this.emailText1 = data.value;
-    }, err => {
-      console.log(err);
-    });
-    this.configService.getParam("validation2", this.organumber).subscribe(data => {
-      console.log(data.value);
-      this.emailText2 = data.value;
-    }, err => {
-      console.log(err);
-    });
-  }
 
 
 }

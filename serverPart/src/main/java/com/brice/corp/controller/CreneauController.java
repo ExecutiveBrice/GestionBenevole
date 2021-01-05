@@ -31,9 +31,9 @@ public class CreneauController {
 
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public ResponseEntity<Creneau> add(@RequestBody Creneau creneau) {
+    public ResponseEntity<Creneau> add(@RequestBody Creneau creneau, @RequestParam Integer eventId) {
         logger.debug("add Creneau");
-        creneauService.persist(creneau);
+        creneauService.addCreneau(creneau, eventId);
 
         if(creneau.getId() == null) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -46,7 +46,7 @@ public class CreneauController {
     @RequestMapping(value = "/", method = RequestMethod.PUT)
     public ResponseEntity<Creneau> update(@RequestBody Creneau creneau) {
         logger.debug("update Creneau");
-        creneauService.persist(creneau);
+        creneauService.updateCreneau(creneau);
         return new ResponseEntity<>(creneau, HttpStatus.OK);
     }
 
@@ -57,7 +57,7 @@ public class CreneauController {
         List<Creneau> creneaux = creneauService.findByGroupeAndEvenementId(group, eventId);
 
         if(creneaux.isEmpty()) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(creneaux, HttpStatus.NO_CONTENT);
         }
 
         return new ResponseEntity<>(creneaux, HttpStatus.OK);
@@ -66,10 +66,10 @@ public class CreneauController {
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
     public ResponseEntity<List<Creneau>> getAll(@RequestParam Integer eventId) {
         logger.debug("getAll Creneau");
-        List<Creneau> creneaux = creneauService.findAll();
+        List<Creneau> creneaux = creneauService.findByEvenementId(eventId);
 
         if(creneaux.isEmpty()) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(creneaux, HttpStatus.NO_CONTENT);
         }
 
         return new ResponseEntity<>(creneaux, HttpStatus.OK);

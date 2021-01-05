@@ -1,7 +1,6 @@
 package com.brice.corp.service;
 
 
-import com.brice.corp.model.Config;
 import com.brice.corp.model.Creneau;
 
 import java.util.List;
@@ -11,7 +10,13 @@ import java.util.List;
  */
 public interface CreneauService {
 
-    void persist(Creneau child);
+    void persist(Creneau creneau);
+
+    void addCreneau(Creneau creneau, Integer evenementId);
+
+    void updateCreneau(Creneau creneau);
+
+
 
     List<Creneau> findByGroupeAndEvenementId(Integer groupe, Integer evenementId);
 

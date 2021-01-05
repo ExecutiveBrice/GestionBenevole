@@ -1,8 +1,11 @@
 package com.brice.corp.model;
 
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -31,9 +34,11 @@ public class Benevole {
     @Column(name = "REPONSE")
     private String reponse;
 
+    @JsonIgnore
     @ManyToMany
     private List<Croisement> croisements;
 
+    @JsonIgnore
     @ManyToOne
     private Evenement evenement;
 
@@ -109,5 +114,33 @@ public class Benevole {
 
     public void setEvenement(Evenement evenement) {
         this.evenement = evenement;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Benevole)) return false;
+        Benevole benevole = (Benevole) o;
+        return Objects.equals(getId(), benevole.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public String toString() {
+        return "Benevole{" +
+                "id=" + id +
+                ", prenom='" + prenom + '\'' +
+                ", nom='" + nom + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", email='" + email + '\'' +
+                ", commentaire='" + commentaire + '\'' +
+                ", reponse='" + reponse + '\'' +
+                ", croisements=" + croisements +
+                ", evenement=" + evenement +
+                '}';
     }
 }

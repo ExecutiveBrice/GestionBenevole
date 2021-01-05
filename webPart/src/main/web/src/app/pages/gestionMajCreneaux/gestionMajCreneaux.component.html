@@ -1,43 +1,46 @@
-
-
-
-<div class="col-sm-4 ">
-  <div class="input-group mb-3 ">
+<div class="row">
+  <div class="input-group col-sm-4 ">
     <div class="input-group-prepend">
       <span class="input-group-text">Plage Horaire : </span>
     </div>
     <input type="text" [(ngModel)]="newCreneau.plage" class="form-control" id="plage">
   </div>
-  <div class="input-group mb-3 ">
+  <div class="input-group col-sm-4 ">
     <div class="input-group-prepend">
       <span class="input-group-text">Ordre : </span>
     </div>
     <input type="text" [(ngModel)]="newCreneau.ordre" class="form-control" id="ordre">
   </div>
-  <div class="input-group mb-3 ">
+  <div class="input-group col-sm-4 ">
     <button type="button" class="btn btn-block btn-info" (click)="ajout(newCreneau)">Ajout</button>
   </div>
 </div>
+<div class="row">
+  <div *ngFor="let creneau of creneaux | orderBy:'ordre':false " class="col-sm-3">
+    <div class="row bordered">
+      <div class="input-group col-sm-8 ">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Ordre : </span>
+        </div>
+        <input type="text" [(ngModel)]="creneau.ordre" (blur)="update(creneau)" class="form-control">
+      </div>
+      <div class="input-group col-sm-4 ">
+        <button type="button" class="btn btn-block btn-danger" (click)="delete(creneau)">X</button>
+      </div>
+      <div class="input-group col-sm-12 ">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Plage : </span>
+        </div>
+        <input type="text" [(ngModel)]="creneau.plage" (blur)="update(creneau)" class="form-control">
+      </div>
 
-<div *ngFor="let creneau of creneaux | orderBy:'ordre':false " class="col-sm-4">
-  <div class="input-group mb-3 ">
-    <div class="input-group-prepend">
-      <span class="input-group-text">Plage : </span>
+      <div *ngFor="let creneauChevauche of creneaux | orderBy:'ordre':false " class="col-sm-6">
+        <button [disabled]="creneauChevauche.id == creneau.id" type="button" class="btn btn-block btn-info "
+          [ngClass]="{'btn-warning':creneau.chevauchement.indexOf(creneauChevauche.id)>-1}"
+          (click)="choisir(creneau, creneauChevauche)">{{creneauChevauche.plage}}
+        </button>
+      </div>
+
     </div>
-    <input type="text" [(ngModel)]="creneau.plage" class="form-control" id="plage">
   </div>
-  <div class="input-group mb-3 ">
-    <div class="input-group-prepend">
-      <span class="input-group-text">Ordre : </span>
-    </div>
-    <input type="text" [(ngModel)]="creneau.ordre" class="form-control" id="ordre">
-  </div>
-  <div *ngFor="let creneauChevauche of creneaux | orderBy:'ordre':false " class="">
-    <button *ngIf="creneauChevauche.id != creneau.id" type="button" class="btn btn-block btn-secondary col-sm-4"
-    [ngClass]="{'btn-danger':creneau.chevauchement.indexOf(creneauChevauche.id)>-1}"
-    (click)="choisir(creneau, creneauChevauche)">{{creneauChevauche.plage}}
-    </button>
-  </div>
-  <button type="button" class="btn btn-block btn-info" (click)="update(creneau)">Mettre à jour</button>
-  <button type="button" class="btn btn-block btn-info" (click)="delete(creneau)">delete</button>
-</div> 
+</div>

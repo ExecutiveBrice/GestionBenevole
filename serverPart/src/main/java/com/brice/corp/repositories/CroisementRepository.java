@@ -16,7 +16,17 @@ import java.util.List;
 @Repository
 public interface CroisementRepository extends JpaRepository<Croisement, Integer> {
 
-    List<Croisement> findByCreneauGroupeAndCreneauEvenementId(Integer groupe, Integer evenementId);
+    List<Croisement> findByStandTypeAndStandEvenementId(Integer etat, Integer evenementId);
 
     List<Croisement> findAll();
+
+    List<Croisement> findAllById(Integer croisementId);
+
+    List<Croisement> findByStandId(Integer standId);
+
+    List<Croisement> findByCreneauId(Integer creneauId);
+
+    List<Croisement> findByBenevolesId(Integer benevoleId);
+
+
 }

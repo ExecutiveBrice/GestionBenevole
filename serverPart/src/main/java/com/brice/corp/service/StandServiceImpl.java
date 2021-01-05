@@ -1,6 +1,9 @@
 package com.brice.corp.service;
 
 
+import com.brice.corp.model.Creneau;
+import com.brice.corp.model.Croisement;
+import com.brice.corp.model.Evenement;
 import com.brice.corp.model.Stand;
 
 import com.brice.corp.repositories.StandRepository;
@@ -22,13 +25,34 @@ public class StandServiceImpl implements StandService {
     @Autowired
     private StandRepository standRepository;
 
+    @Autowired
+    private CreneauService creneauService;
+
+    @Autowired
+    private EvenementService evenementService;
 
     @Override
     public void persist(Stand child) {
         standRepository.save(child);
     }
 
-     /**
+    @Override
+    public void addStand(Stand stand, Integer eventId){
+        Evenement evenvement  = evenementService.findById(eventId);
+        stand.setEvenement(evenvement);
+        persist(stand);
+    }
+
+
+
+    @Override
+    public void delete(Integer standId) {
+        Stand stand = findById(standId);
+
+        standRepository.delete(stand);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -44,6 +68,22 @@ public class StandServiceImpl implements StandService {
     public Stand findById(Integer childId) {
         return standRepository.getOne(childId);
     }
+
+
+    @Override
+    public void update(Stand stand) {
+        Stand realStand = findById(stand.getId());
+
+        realStand.setNom(stand.getNom());
+        realStand.setBulle(stand.getBulle());
+        realStand.setDescription(stand.getDescription());
+        realStand.setOrdre(stand.getOrdre());
+
+        realStand.setType(stand.getType());
+        standRepository.save(realStand);
+    }
+
+
 
     /**
      * {@inheritDoc}

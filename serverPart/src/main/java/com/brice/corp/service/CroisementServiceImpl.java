@@ -1,6 +1,7 @@
 package com.brice.corp.service;
 
 
+import com.brice.corp.model.Creneau;
 import com.brice.corp.model.Croisement;
 import com.brice.corp.repositories.CroisementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +20,14 @@ import java.util.List;
 public class CroisementServiceImpl implements CroisementService {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public class NotFoundException extends RuntimeException{
-    }
+    public class NotFoundException extends RuntimeException{}
 
     @Autowired
     private CroisementRepository croisementRepository;
 
-    @Autowired
-    private StandService childService;
-
     @Override
-    public void persist(Croisement parent) {
-        croisementRepository.save(parent);
+    public void persist(Croisement croisement) {
+        croisementRepository.save(croisement);
     }
 
 
@@ -38,12 +35,54 @@ public class CroisementServiceImpl implements CroisementService {
      * {@inheritDoc}
      */
     @Override
-    public List<Croisement> findByCreneauGroupeAndCreneauEvenementId(Integer groupe, Integer eventId) {
-        return croisementRepository.findByCreneauGroupeAndCreneauEvenementId(groupe, eventId);
+    public List<Croisement> findByEtatAndEvenementId(Integer etat, Integer eventId) {
+        return croisementRepository.findByStandTypeAndStandEvenementId(etat, eventId);
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void delete(Integer croisementId) {
+        Croisement croisement = findById(croisementId);
 
+
+        croisementRepository.delete(croisement);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Croisement findById(Integer croisementId){
+        return croisementRepository.findAllById(croisementId).get(0);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Croisement> getCroisementByStand(Integer standId){
+        return croisementRepository.findByStandId(standId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Croisement> getCroisementByCreneau(Integer creneauId){
+        return croisementRepository.findByCreneauId(creneauId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Croisement> getCroisementByBenveole(Integer benevoleId){
+        return croisementRepository.findByBenevolesId(benevoleId);
+    }
     /**
      * {@inheritDoc}
      */
@@ -51,8 +90,5 @@ public class CroisementServiceImpl implements CroisementService {
     public List<Croisement> findAll() {
         return croisementRepository.findAll();
     }
-
-
-
 
 }

@@ -2,9 +2,8 @@ package com.brice.corp.service;
 
 
 import com.brice.corp.model.Benevole;
-import com.brice.corp.model.Config;
+import com.brice.corp.model.Evenement;
 import com.brice.corp.repositories.BenevoleRepository;
-import com.brice.corp.repositories.ConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +21,61 @@ public class BenevoleServiceImpl implements BenevoleService {
     @Autowired
     private BenevoleRepository benevoleRepository;
 
+    @Autowired
+    private CroisementService croisementService;
+
+    @Autowired
+    private EvenementService evenementService;
 
     @Override
-    public void persist(Benevole child) {
-        benevoleRepository.save(child);
+    public void persist(Benevole benevole) {
+        benevoleRepository.save(benevole);
     }
+
+
+    @Override
+    public void add(Benevole benevole, Integer evenementId){
+        Evenement evenement = evenementService.findById(evenementId);
+
+        benevole.setEvenement(evenement);
+
+        persist(benevole);
+
+    }
+
+
+
+
+    @Override
+    public void update(Benevole benevole) {
+
+        Benevole pBenevole = findById(benevole.getId());
+        pBenevole.setCommentaire(benevole.getCommentaire());
+
+        pBenevole.setEmail(benevole.getEmail());
+        pBenevole.setNom(benevole.getNom());
+        pBenevole.setPrenom(benevole.getPrenom());
+        pBenevole.setTelephone(benevole.getTelephone());
+        pBenevole.setReponse(benevole.getReponse());
+        persist(pBenevole);
+    }
+
+
+
+
+    @Override
+    public Benevole updateCroisements(Integer benevoleId, List<Integer> croisementListId){
+
+        Benevole benevole = findById(benevoleId);
+        benevole.getCroisements().clear();
+        for (Integer croisementId:croisementListId) {
+            benevole.getCroisements().add(croisementService.findById(croisementId));
+        }
+        persist(benevole);
+        return benevole;
+    }
+
+
 
     /**
      * {@inheritDoc}
@@ -40,8 +89,8 @@ public class BenevoleServiceImpl implements BenevoleService {
      * {@inheritDoc}
      */
     @Override
-    public Benevole findById(Integer childId) {
-        return benevoleRepository.getOne(childId);
+    public Benevole findById(Integer benevoleId) {
+        return benevoleRepository.getOne(benevoleId);
     }
 
     /**

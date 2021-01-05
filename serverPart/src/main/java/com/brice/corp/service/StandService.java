@@ -11,11 +11,18 @@ import java.util.List;
  */
 public interface StandService {
 
-    void persist(Stand child);
+    void persist(Stand stand);
+
+    void addStand(Stand stand, Integer eventId);
 
     List<Stand> findByEvenementId(Integer evenementId);
 
     List<Stand> findAll();
 
-    Stand findById(Integer childId);
+    void delete(Integer standId);
+
+    Stand findById(Integer standId);
+
+    void update(Stand stand);
+
 }

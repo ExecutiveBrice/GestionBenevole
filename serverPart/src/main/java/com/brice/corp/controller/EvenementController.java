@@ -1,11 +1,7 @@
 package com.brice.corp.controller;
 
 
-
-import com.brice.corp.model.Benevole;
-import com.brice.corp.model.Creneau;
 import com.brice.corp.model.Evenement;
-import com.brice.corp.service.CreneauService;
 import com.brice.corp.service.EvenementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controller de la vue globale
@@ -46,32 +43,39 @@ public class EvenementController {
     @RequestMapping(value = "/", method = RequestMethod.PUT)
     public ResponseEntity<Evenement> update(@RequestBody Evenement evenement) {
         logger.debug("update Evenement");
-        evenementService.persist(evenement);
+        evenementService.update(evenement);
         return new ResponseEntity<>(evenement, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.DELETE)
+    public ResponseEntity<Integer> delete(@RequestParam Integer id) {
+        logger.debug("delete Evenement");
+        evenementService.deleteById(id);
+        return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "/getById", method = RequestMethod.GET)
     public ResponseEntity<Evenement> getById(@RequestParam Integer id) {
         logger.debug("getById Evenement id "+id);
-        Evenement event = evenementService.findById(id);
+        Evenement evenement = evenementService.findById(id);
 
-        if(event == null) {
+        if(evenement == null) {
             logger.debug("event null");
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
         logger.debug("event not null");
-        return new ResponseEntity<>(event, HttpStatus.OK);
+        return new ResponseEntity<>(evenement, HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
-    public ResponseEntity<List<Evenement>> getAll(@RequestParam Integer id) {
+    public ResponseEntity<List<Evenement>> getAll() {
         logger.debug("getAll Evenement");
         List<Evenement> evenements = evenementService.findAll();
 
         if(evenements.isEmpty()) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(evenements, HttpStatus.NO_CONTENT);
         }
 
         return new ResponseEntity<>(evenements, HttpStatus.OK);

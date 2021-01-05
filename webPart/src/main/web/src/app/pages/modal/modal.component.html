@@ -1,0 +1,14 @@
+
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Mot de passe pour l'évenement : {{name}}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">×</span>
+    </button>
+  </div>
+  <div class="modal-body">
+      <input type="text" [(ngModel)]="password" class="form-control" id="password" (keyup.enter)="modal.close(password)">
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.close(password)">Ok</button>
+  </div>
+

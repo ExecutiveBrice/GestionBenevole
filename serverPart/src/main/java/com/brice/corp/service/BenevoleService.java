@@ -2,7 +2,6 @@ package com.brice.corp.service;
 
 
 import com.brice.corp.model.Benevole;
-import com.brice.corp.model.Config;
 
 import java.util.List;
 
@@ -11,15 +10,22 @@ import java.util.List;
  */
 public interface BenevoleService {
 
-    void persist(Benevole child);
+    void persist(Benevole benevole);
+
+
+
+    void add(Benevole benevole, Integer evenementId);
+
+
+    void update(Benevole benevole);
 
     List<Benevole> findByEvenementId(Integer evenementId);
 
     Benevole findByEmail(String email, Integer evenementId);
 
-
+    Benevole updateCroisements(Integer benevoleId, List<Integer> croisementListId);
 
     List<Benevole> findAll();
 
-    Benevole findById(Integer childId);
+    Benevole findById(Integer benevoleId);
 }

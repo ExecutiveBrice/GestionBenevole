@@ -1,14 +1,15 @@
 package com.brice.corp.service;
 
-
-import com.brice.corp.model.Config;
-import com.brice.corp.repositories.ConfigRepository;
-import com.brice.corp.repositories.StandRepository;
+import com.brice.corp.repositories.EvenementRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Classe implémentant les services IG
@@ -17,48 +18,27 @@ import java.util.List;
 @Transactional
 public class ConfigServiceImpl implements ConfigService {
 
+    public static final Logger logger = LoggerFactory.getLogger(EvenementService.class);
 
     @Autowired
-    private ConfigRepository configRepository;
+    private EvenementRepository evenementRepository;
+    @Autowired
+    private Environment environment;
 
 
-    @Override
-    public void persist(Config child) {
-        configRepository.save(child);
-    }
 
     @Override
-    public Config getByParamAndEvenementId(String param, Integer evenementId) {
+    public Map<String, String> getParams() {
+        Map<String, String> params = new HashMap<>();
 
-         Config config = configRepository.getByParamAndEvenementId(param, evenementId);
-         if (config == null){
-             config = new Config();
-             config.setParam(param);
-         }
-         return  config;
-    }
+        params.put("url", environment.getRequiredProperty("appparam.url"));
+        params.put("title", environment.getRequiredProperty("appparam.messages.creation.title"));
+        params.put("header", environment.getRequiredProperty("appparam.messages.creation.header"));
+        params.put("using", environment.getRequiredProperty("appparam.messages.creation.using"));
+        params.put("managing", environment.getRequiredProperty("appparam.messages.creation.managing"));
+        params.put("signature", environment.getRequiredProperty("appparam.messages.creation.signature"));
 
-    @Override
-    public List<Config> findByEvenementId(Integer evenementId){
-        return configRepository.findByEvenementId(evenementId);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Config> findAll() {
-        return configRepository.findAll();
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Config findById(Integer childId) {
-        return configRepository.getOne(childId);
+    return params;
     }
 
 }

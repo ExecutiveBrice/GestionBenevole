@@ -1,4 +1,4 @@
-import { Evenement } from './event';
+import { Evenement } from './evenement';
 
 
 

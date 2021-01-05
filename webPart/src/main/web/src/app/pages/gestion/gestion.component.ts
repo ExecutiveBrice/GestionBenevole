@@ -1,10 +1,12 @@
 
 import { Component, OnInit } from '@angular/core';
-import { CroisementService, EvenementService, StandService, MailService, ConfigService, ExcelService, BenevoleService } from '../../services';
+import { ValidationService, TransmissionService, CroisementService, EvenementService, StandService, MailService, ExcelService, BenevoleService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Benevole, Email, Config } from '../../models';
+import { Benevole, Email, Evenement } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
-import { TransmissionService } from 'src/app/services/transmission.service';
+import { Subscription } from 'rxjs';
+import QRCode from 'qrcode'
+
 
 
 
@@ -16,22 +18,25 @@ import { TransmissionService } from 'src/app/services/transmission.service';
 
 export class GestionComponent implements OnInit {
   rappel;
-  bloque: string;
-  benevoles: Benevole[];
-  benevolesWithChoice: Benevole[];
-  benevolesWithoutChoice: Benevole[];
-  benevolesToChange: Benevole[];
+  benevoles: Benevole[] = [];
+  benevolesWithChoice: Benevole[] = [];
+  benevolesWithoutChoice: Benevole[] = [];
+  benevolesToChange: Benevole[] = [];
   dateRappel: string;
   mail: boolean;
   theCheckbox: any
   selectedDeviceObj: any
+  evenement: Evenement
+  params: Map<string, string>
+
   emailInfo: Email = {
     to: "",
     subject: "",
     text: "Bla bla"
   }
-
-  mailingList: Benevole[];
+  qrcode: Blob
+  using_address: String;
+  mailingList: Benevole[] = [];
   mailingLists = [{
     id: '1',
     name: 'Tout les inscrits',
@@ -46,7 +51,7 @@ export class GestionComponent implements OnInit {
   }]
 
   organumber: number;
-
+  subscription = new Subscription();
 
   constructor(
     public route: ActivatedRoute,
@@ -54,143 +59,157 @@ export class GestionComponent implements OnInit {
     public evenementService: EvenementService,
     public transmissionService: TransmissionService,
     public benevoleService: BenevoleService,
-    public configService: ConfigService,
     public croisementService: CroisementService,
     public standService: StandService,
     public excelService: ExcelService,
     public mailService: MailService,
+    public validationService: ValidationService,
     public sanitizer: DomSanitizer) {
 
   }
 
   ngOnInit() {
+    this.params = JSON.parse(localStorage.getItem('allParams'));
+    this.evenement = new Evenement();
     this.organumber = parseInt(this.route.snapshot.paramMap.get('id'));
-
-    console.log(this.organumber)
-    if (!this.organumber || isNaN(this.organumber) || this.organumber < 1) {
-      this.router.navigate(['/error']);
-    }
+    this.validationService.testGestion(this.organumber)
 
 
+    this.subscription = this.transmissionService.dataStream.subscribe(
+      data => {
+        console.log(data)
+        this.evenement = data
 
+
+        this.using_address = this.params['url'] + "/connexion/" + this.evenement.id
+        // With promises
+        QRCode.toDataURL(this.using_address)
+          .then(url => {
+            this.qrcode = url
+            console.log(url)
+          })
+          .catch(err => {
+            console.error(err)
+          })
+      });
     this.rappel = false;
     this.mail = false;
-    this.mailingList = [];
-    this.benevoles = [];
-    this.benevolesWithChoice = [];
-    this.benevolesWithoutChoice = [];
-    this.benevolesToChange = [];
-    this.getBlocage();
-    this.getText();
-    this.getDateRappel();
+
     this.getBenevoles();
-    this.getEvenement();
-
-
   }
 
 
-  getEvenement() {
-    this.evenementService.getById(this.organumber).subscribe(data => {
-      console.log(data);
-      this.transmissionService.dataTransmission(data);
-    }, err => {
-      console.log(err);
-      this.router.navigate(['error']);
-    })
-  }
 
-  exportAsXLSX(): void {
 
-    this.standService.getAll(this.organumber).subscribe(data => {
-      console.log(data)
+  async exportAsXLSX() {
+    var promises = []
+    var standsLite = []
 
-      let stands = new Array;
-      data.forEach(stand => {
-        let standLite = {
-          nom: "",
-          creneaux: []
-        };
-        standLite.nom = stand.nom;
-        standLite.creneaux = [];
+    this.standService.getAll(this.organumber).subscribe(stands => {
 
-        for (let indexR = 0; indexR < 100; indexR++) {
-          let creneau = {};
+  
 
-          stand.croisements.sort(function (a, b) { return a.creneau.ordre - b.creneau.ordre; })
-          for (let index = 0; index < stand.croisements.length; index++) {
-            const croisement = stand.croisements[index];
-            creneau[croisement.creneau.plage] = "";
-            if (croisement.benevoles[indexR]) {
-              creneau[croisement.creneau.plage] = croisement.benevoles[indexR].nom + " " + croisement.benevoles[indexR].prenom;
-            }
-          }
-          standLite.creneaux.push(creneau);
-        }
-        stands.push(standLite)
+
+
+
+
+
+      stands.forEach(stand => {
+        stand.croisements = []
+        promises.push(new Promise((resolve, reject) => {
+          this.croisementService.getByStand(stand.id).subscribe(croisements => {
+
+              stand.croisements = croisements
+
+
+              let standLite = {
+                nom: "",
+                creneaux: []
+              };
+              standLite.nom = stand.nom;
+              standLite.creneaux = [];
+
+              for (let indexR = 0; indexR < 100; indexR++) {
+                let creneau = {};
+
+                stand.croisements.sort(function (a, b) { return a.creneau.ordre - b.creneau.ordre; })
+                for (let index = 0; index < stand.croisements.length; index++) {
+                  const croisement = stand.croisements[index];
+                  creneau[croisement.creneau.plage] = "";
+                  if (croisement.benevoles[indexR]) {
+                    creneau[croisement.creneau.plage] = croisement.benevoles[indexR].nom + " " + croisement.benevoles[indexR].prenom;
+                  }
+                }
+                standLite.creneaux.push(creneau);
+              }
+
+              standsLite.push(standLite)
+              resolve("Completed "+standLite.nom)
+            },
+              error => {
+                console.log('😢 Oh no!', error);
+                reject()
+              })
+        }))
+
       });
 
-      console.log(stands)
 
-      this.excelService.multiExportAsExcelFile(stands, 'Stands');
+
+
+
+
+
+
+
+      Promise.all(promises)
+        .then(data => {
+          console.log("Initial data", data);
+          console.log(standsLite)
+          this.excelService.multiExportAsExcelFile(standsLite, 'Stands');
+        });
+
+
+
+
+
+
+
+
+
 
     },
       error => {
         console.log('😢 Oh no!', error);
       });
 
+
+
+
   }
 
-  getDateRappel() {
-    this.configService.getParam("dateRappel", this.organumber).subscribe(data => {
-      this.dateRappel = data.value;
-    }, err => {
-      console.log(err);
-    });
+
+
+  update(evenement: Evenement): void {
+    console.log(evenement)
+    this.evenementService.update(evenement).subscribe(data => {
+      console.log(data)
+    },
+      error => {
+        console.log('😢 Oh no!', error);
+      });
   }
+
 
   updateDateRappel() {
-    let date = new Date();
-    this.dateRappel = date.getUTCDate() + "/" + date.getUTCMonth() + "/" + date.getFullYear() + " à " + date.getHours() + ":" + date.getMinutes()
-    console.log(this.dateRappel)
-    let config = new Config();
-    config.param = 'dateRappel'
-    config.value = this.dateRappel
-    this.configService.updateParam(config)
-      .subscribe(res => {
-        console.log(res);
-      }, err => {
-        console.log(err);
-      });
+    this.evenement.rappelDate = new Date()
+    this.update(this.evenement)
   }
 
-  getBlocage() {
-    this.configService.getParam("lock", this.organumber).subscribe(data => {
-      console.log(data);
-      this.bloque = data.value;
-    }, err => {
-      console.log(err);
-    });
-  }
 
-  updateBlocage(bloque) {
-    if (bloque == "true") {
-      bloque = "false";
-    } else {
-      bloque = "true";
-    }
-
-    this.bloque = bloque;
-    let config = new Config();
-    config.param = 'lock'
-    config.value = bloque
-    this.configService.updateParam(config)
-      .subscribe(res => {
-        console.log(res);
-      }, err => {
-        console.log(err);
-      });
-
+  updateBlocage() {
+    this.evenement.lock = !this.evenement.lock
+    this.update(this.evenement)
   }
 
   getMailingList(option): void {
@@ -210,68 +229,45 @@ export class GestionComponent implements OnInit {
   getBenevoles(): void {
     console.log("getBenevoles")
 
-    this.benevoleService.getAll(this.organumber).subscribe(data => {
-      console.log(data)
-      this.benevoles = data;
-      this.getBenevolesWithChoice(this.benevoles);
-      this.getBenevolesWithoutChoice(this.benevoles);
-      this.getBenevolesToChange(this.benevoles);
+    this.benevoleService.getByEvenementId(this.organumber).subscribe(benevoles => {
+      console.log(benevoles)
+      if (benevoles) {
+        this.benevoles = benevoles;
+
+        benevoles.forEach(benevole => {
+          benevole.croisements = []
+          this.croisementService.getByBenevole(benevole.id).subscribe(croisements => {
+            console.log(croisements)
+
+            benevole.croisements = croisements
+
+            if (benevole.croisements.length > 0) {
+              this.benevolesWithChoice.push(benevole);
+            }
+            if (benevole.croisements.length == 0) {
+              this.benevolesWithoutChoice.push(benevole);
+            }
+            if (benevole.croisements) {
+              benevole.croisements.forEach(croisement => {
+                if (croisement.stand.type == 1 || croisement.stand.type == 3) {
+                  this.benevolesToChange.push(benevole);
+                }
+              });
+            }
+
+
+          },
+            error => {
+              console.log('😢 Oh no!', error);
+            });
+        });
+      }
     },
       error => {
         console.log('😢 Oh no!', error);
       });
   }
 
-  getBenevolesWithChoice(benevoles: Benevole[]) {
-
-    benevoles.forEach(benevole => {
-      if (benevole.croisements.length > 0) {
-        this.benevolesWithChoice.push(benevole);
-      }
-    });
-
-  }
-  getBenevolesWithoutChoice(benevoles: Benevole[]) {
-    benevoles.forEach(benevole => {
-      if (benevole.croisements.length == 0) {
-        this.benevolesWithoutChoice.push(benevole);
-      }
-    });
-
-  }
-  getBenevolesToChange(benevoles: Benevole[]) {
-    benevoles.forEach(benevole => {
-      if (benevole.croisements) {
-        benevole.croisements.forEach(croisement => {
-          if (croisement.stand.etat == 1 || croisement.stand.etat == 3) {
-            this.benevolesToChange.push(benevole);
-          }
-        });
-      }
-    });
-
-  }
-
-  getText() {
-    this.emailInfo.subject = 'Infos pratique';
-
-    this.configService.getParam("rappel1", this.organumber).subscribe(data => {
-
-      this.emailInfo.text = data.value;
-
-      this.configService.getParam("rappel2", this.organumber).subscribe(res => {
-
-        this.emailInfo.text = this.emailInfo.text + data.value;
-      }, err => {
-        console.log(err);
-      });
-
-    }, err => {
-      console.log(err);
-    });
-
-
-  }
 
 
   envoiMail(email: Email) {
@@ -292,11 +288,11 @@ export class GestionComponent implements OnInit {
         benevole.croisements.forEach(croisement => {
           emailCopy.text = emailCopy.text + (croisement.stand.nom == "tous" ? "N'importe quel stand" : croisement.stand.nom) + " - " + croisement.creneau.plage + "<br>"
         })
-        if (benevole.gateaux) {
-          emailCopy.text = emailCopy.text + "<br>Vous avez également proposé d'apporter :<br>"
-          emailCopy.text = emailCopy.text + benevole.gateaux + "<br>"
-        }
+
       }
+
+      
+
 
       this.mailService.sendMail(emailCopy)
         .subscribe(res => {
@@ -307,7 +303,6 @@ export class GestionComponent implements OnInit {
         });
     })
     this.rappel = false;
-    this.getText();
     this.mailingList = [];
     this.updateDateRappel()
   }

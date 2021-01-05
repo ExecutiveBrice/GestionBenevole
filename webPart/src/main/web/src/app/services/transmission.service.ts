@@ -9,7 +9,6 @@ export class TransmissionService {
   // Observable string sources
   private dataSource = new Subject<Evenement>();
 
-
   // Observable string streams
   dataStream = this.dataSource.asObservable();
 

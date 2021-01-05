@@ -4,6 +4,15 @@ server:
 spring:
   swagger:
     enable: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: xxx
+    password: xxx
+    properties.mail.smtp:
+      ssl.trust: smtp.gmail.com
+      auth: true
+      starttls.enable: true
 logging:
   file: /home/pi/java_gestion_benevole.log
   level:
@@ -12,9 +21,9 @@ logging:
     org.springframework.web: WARN
     org.hibernate: WARN
 datasource:
-  url: jdbc:postgresql://192.168.1.19:5432/postgres
-  username: pi
-  password: serveurBrice
+  url: jdbc:postgresql://xxxxx:5432/postgres
+  username: xxxxx
+  password: xxxxx
   driverClassName: org.postgresql.Driver
   defaultSchema:
   maxPoolSize: 20
@@ -24,3 +33,20 @@ datasource:
     show_sql: false
     format_sql: true
     dialect: org.hibernate.dialect.PostgreSQLDialect
+evenement:
+  default:
+    lock : true
+    recallDaysBeforeStartDate: 7
+    messages:
+      validation: "Votre participation à bien été prise en compte"
+      retour: "Vous pouvez revenir à tout moment pour modifier vos choix en vous connectant sur <a href=\"<using_address>\">le site d'inscription</a> à l'aide de votre adresse e-mail."
+      rappel: "L'équipe d'animation de l'ALOD vous rappel que :Ce <start_date> se déroule <event_name>."
+appparam :
+  url: "http://localhost:8091/GestionBenevole/#"
+  messages:
+    creation:
+      title: "Création de l'evenement <event_name>"
+      header: "Le gestionnaire de l'évenement <strong><event_name></strong> à bien été créée!<br /><br /><br />"
+      using: "<u>L'adresse d'utilisation est :</u><br /><a href=\"<using_address>\"><using_address></a><br /><br />"
+      managing: "<u>L'adresse de gestpour modifier vos choixion est :</u><br /><a href=\"<managing_address>\"><managing_address></a>"
+      signature: "<br /><br />Cordialement,<br />L'équipe d'animation de l'ALOD"

@@ -1,7 +1,7 @@
 import { Creneau } from "./creneau";
 import { Stand } from "./stand";
 import { Benevole } from "./benevole";
-import { Evenement } from './event';
+import { Evenement } from './evenement';
 
 export class Croisement {
   id:number;
@@ -12,4 +12,6 @@ export class Croisement {
   besoin:boolean;
   limite:number;
   evenement:Evenement;
+
+
 }

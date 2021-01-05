@@ -26,11 +26,19 @@ public class StandController {
     private StandService standService;
 
 
+    @RequestMapping(value = "/", method = RequestMethod.DELETE)
+    public ResponseEntity<Integer> delete(@RequestParam Integer standId) {
+        logger.debug("delete standId " +standId);
+        standService.delete(standId);
+
+
+        return new ResponseEntity<>(standId, HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public ResponseEntity<Stand> add(@RequestBody Stand stand) {
+    public ResponseEntity<Stand> add(@RequestBody Stand stand,@RequestParam Integer eventId) {
         logger.debug("add Stand");
-        standService.persist(stand);
+        standService.addStand(stand,eventId);
 
         if(stand.getId() == null) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -43,19 +51,18 @@ public class StandController {
     @RequestMapping(value = "/", method = RequestMethod.PUT)
     public ResponseEntity<Stand> update(@RequestBody Stand stand) {
         logger.debug("update Stand");
-        standService.persist(stand);
+        standService.update(stand);
         return new ResponseEntity<>(stand, HttpStatus.OK);
     }
-
 
 
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
     public ResponseEntity<List<Stand>> getAll(@RequestParam Integer eventId) {
         logger.debug("getAll Stand");
-        List<Stand> stands = standService.findAll();
+        List<Stand> stands = standService.findByEvenementId(eventId);
 
         if(stands.isEmpty()) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return new ResponseEntity(stands,HttpStatus.NO_CONTENT);
         }
 
         return new ResponseEntity<>(stands, HttpStatus.OK);

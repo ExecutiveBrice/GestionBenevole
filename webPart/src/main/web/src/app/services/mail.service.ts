@@ -9,7 +9,7 @@ export class MailService {
     private http: HttpClient
   ) { }
 
-  rappel(email: Email) {
+  autoSendMail(email : Email) {
     return this.http.post(this.apiUrl + "/rappel", email, { responseType: 'json' })
   }
 

@@ -1,11 +1,11 @@
 
 import { Component, OnInit } from '@angular/core';
 import { BenevoleService } from '../../services';
-import { TransmissionService, EvenementService, CroisementService, StandService, MailService, ExcelService } from '../../services';
+import { ConfigService, ValidationService, TransmissionService, EvenementService, CroisementService, StandService, MailService, ExcelService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Benevole, Croisement, Email } from '../../models';
+import { Benevole, Croisement, Email, Evenement } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
-
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -19,16 +19,15 @@ export class GestionBenevolesComponent implements OnInit {
   croisements: Croisement[];
   benevoles: Benevole[];
   choix: string;
-  email: Email = {
-    to: "",
-    subject: "",
-    text: ""
-  }
+  params: Map<string, string>
+  evenement: Evenement;
+  subscription = new Subscription()
 
 
   constructor(
     public route: ActivatedRoute,
     public router: Router,
+    public configService: ConfigService,
     public evenementService: EvenementService,
     public transmissionService: TransmissionService,
     public benevoleService: BenevoleService,
@@ -36,18 +35,22 @@ export class GestionBenevolesComponent implements OnInit {
     public standService: StandService,
     public mailService: MailService,
     public excelService: ExcelService,
+    public validationService: ValidationService,
     public sanitizer: DomSanitizer) {
 
-    }
+  }
 
   ngOnInit() {
+    this.params = JSON.parse(localStorage.getItem('allParams'));
+
     this.organumber = parseInt(this.route.snapshot.paramMap.get('id'));
+    this.validationService.testGestion(this.organumber)
 
-    console.log(this.organumber)
-    if (!this.organumber || isNaN(this.organumber) || this.organumber < 1) {
-      this.router.navigate(['/error']);
-    }
-
+    this.subscription = this.transmissionService.dataStream.subscribe(
+      data => {
+        console.log(data)
+        this.evenement = data
+      });
 
     this.benevoles = [];
     this.croisements = [];
@@ -55,32 +58,27 @@ export class GestionBenevolesComponent implements OnInit {
     this.find();
     this.getCroisement();
 
-    this.getEvenement();
-
-
   }
-
-
-  getEvenement() {
-    this.evenementService.getById(this.organumber).subscribe(data => {
-      console.log(data);
-      data.eventName = "Gestion par Bénévole - " + data.eventName
-      this.transmissionService.dataTransmission(data);
-  }, err => {
-      console.log(err);
-      this.router.navigate(['error']);
-  })
-}
 
   exportAsXLSX(): void {
     this.excelService.exportAsExcelFile(this.benevoles, 'sample');
   }
 
   find(): void {
-    console.log("find")
-    this.benevoleService.getAll(this.organumber).subscribe(data => {
-      console.log(data)
-      this.benevoles = data;
+    this.benevoleService.getByEvenementId(this.organumber).subscribe(benevoles => {
+      console.log(benevoles)
+      this.benevoles = benevoles;
+
+      benevoles.forEach(benevole => {
+        benevole.croisements = []
+        this.croisementService.getByBenevole(benevole.id).subscribe(croisements => {
+          console.log(croisements)
+          benevole.croisements = croisements
+        },
+          error => {
+            console.log('😢 Oh no!', error);
+          });
+      });
     },
       error => {
         console.log('😢 Oh no!', error);
@@ -120,10 +118,15 @@ export class GestionBenevolesComponent implements OnInit {
   }
 
 
-
-  addCroisements(benevole): void {
+  addCroisements(benevole: Benevole): void {
     console.log("addCroisements")
-    this.benevoleService.addCroisements(benevole).subscribe(data => {
+    console.log(benevole)
+    let croisementsList = []
+    benevole.croisements.forEach(croisement => {
+      croisementsList.push(croisement.id)
+    });
+    benevole.email = benevole.email.toLowerCase();
+    this.benevoleService.addCroisements(benevole.id, croisementsList).subscribe(data => {
       console.log(data)
     },
       error => {
@@ -133,8 +136,9 @@ export class GestionBenevolesComponent implements OnInit {
 
 
   getCroisement(): void {
-    this.croisementService.getAll().subscribe(data => {
-      this.croisements = data['croisements']
+    this.croisementService.getAll(this.organumber).subscribe(data => {
+      console.log(data)
+      this.croisements = data
     },
       error => {
         console.log('😢 Oh no!', error);
@@ -142,21 +146,23 @@ export class GestionBenevolesComponent implements OnInit {
   }
 
   send(benevole: Benevole) {
-    this.benevoleService.updateReponse(benevole).subscribe(data => {
+    this.benevoleService.update(benevole).subscribe(data => {
       console.log(data)
+      var email = new Email();
+      email.to = benevole.email
 
-      this.email.to = benevole.email
-      this.email.subject = "Réponse au commentaire de la fête de l'école"
-      this.email.text = "Vous nous aviez communiqué que :<br>";
 
-      this.email.text = this.email.text + benevole.commentaire + "<br>"
+      email.subject = "Réponse au commentaire de l'évenement " + this.evenement.eventName;
+      email.text = "Vous nous aviez communiqué que :<br>";
 
-      this.email.text = this.email.text + "<br>Notre réponse :<br>"
+      email.text = email.text + benevole.commentaire + "<br>"
 
-      this.email.text = this.email.text + benevole.reponse + "<br>"
+      email.text = email.text + "<br>Notre réponse :<br>"
 
-      this.email.text = this.email.text + "<br>Vous pourrez bien entendu retrouver cette réponse sur <a href='https://ouchedinier.herokuapp.com'>le site d'inscription</a><br>Cordialement,<br>L'équipe d'animation"
-      this.envoiMail(this.email)
+      email.text = email.text + benevole.reponse + "<br>"
+
+      email.text = email.text + "<br>Vous pourrez bien entendu retrouver cette réponse sur <a href=" + this.params['url'] + "/connexion/" + this.evenement.id + ">le site d'inscription</a><br>Cordialement,<br>L'équipe d'animation"
+      this.envoiMail(email)
     },
       error => {
         console.log('😢 Oh no!', error);

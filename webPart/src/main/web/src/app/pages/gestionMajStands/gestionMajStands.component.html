@@ -1,105 +1,98 @@
-
-
+<div class="row">
+  <div class="input-group col-sm-2">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Ordre : </span>
+    </div>
+    <input type="text" [(ngModel)]="newStand.ordre" class="form-control" id="ordre">
+  </div>
+  <div class="input-group col-sm-4">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Nom : </span>
+    </div>
+    <input type="text" [(ngModel)]="newStand.nom" class="form-control" id="nom">
+  </div>
+  <div class="input-group col-sm-4">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Info : </span>
+    </div>
+    <input type="text" [(ngModel)]="newStand.bulle" class="form-control" id="bulle">
+  </div>
+  <div class="col-sm-2">
+    <button type="button" class="btn btn-block btn-info" (click)="ajout(newStand)">Ajouter</button>
+  </div>
+</div>
 
 <div class="row">
-
-  <div class="col-sm-4 ">
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text">Nom : </span>
+  <div *ngFor="let stand of stands | orderBy:'ordre':false " class="col-sm-4 ">
+    <div class="row bordered">
+      <div class="input-group col-sm-10">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Ordre : </span>
+        </div>
+        <input type="text" [(ngModel)]="stand.ordre" (blur)="update(stand)" class="form-control" id="ordre">
       </div>
-      <input type="text" [(ngModel)]="newStand.nom" class="form-control" id="nom">
-    </div>
-  
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text">Info-Bulle : </span>
+      <div class="input-group col-sm-2">
+        <button type="button" class="btn btn-block btn-danger" (click)="delete(stand)">X</button>
       </div>
-      <input type="text" [(ngModel)]="newStand.bulle" class="form-control" id="bulle">
-    </div>
-  
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text">Ordre : </span>
-      </div>
-      <input type="text" [(ngModel)]="newStand.ordre" class="form-control" id="ordre">
-    </div>
-  
-    <button type="button" class="btn btn-block btn-info" (click)="ajout(newStand)">Ajouter un nouveau stand</button>
-  </div>
 
 
-  <div *ngFor="let stand of stands | orderBy:'ordre':false " class="col-sm-4">
 
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text">Nom : </span>
+      <div class="input-group col-sm-12">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Nom : </span>
+        </div>
+        <input type="text" [(ngModel)]="stand.nom" (blur)="update(stand)" class="form-control" id="nom">
       </div>
-      <input type="text" [(ngModel)]="stand.nom" class="form-control" id="nom">
-    </div>
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text">Info-Bulle : </span>
+      <div class="input-group col-sm-12">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Info-Bulle : </span>
+        </div>
+        <input type="text" [(ngModel)]="stand.bulle" (blur)="update(stand)" class="form-control" id="bulle">
       </div>
-      <input type="text" [(ngModel)]="stand.bulle" class="form-control" id="bulle">
-    </div>
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text">Ordre : </span>
-      </div>
-      <input type="text" [(ngModel)]="stand.ordre" class="form-control" id="ordre">
-    </div>
-    <div class="input-group mb-3">
-      <button type="button" class="btn btn-block" [ngClass]="{'btn-danger':stand.etat == 1 }"
-        (click)="stand.etat = 1">Sans choix</button>
-      <button type="button" class="btn btn-block" [ngClass]="{'btn-danger':stand.etat == 2 }"
-        (click)="stand.etat = 2">Activité</button>
-      <button type="button" class="btn btn-block" [ngClass]="{'btn-danger':stand.etat == 3 }"
-        (click)="stand.etat = 3">Jeux sans choix</button>
-      <button type="button" class="btn btn-block" [ngClass]="{'btn-danger':stand.etat == 4 }"
-        (click)="stand.etat = 4">Jeux</button>
-      <button type="button" class="btn btn-block" [ngClass]="{'btn-danger':stand.etat == 5 }"
-        (click)="stand.etat = 5">Prépa</button>
-    </div>
-
-    <button type="button" class="btn btn-block btn-warning" (click)="update(stand)">Mise à jour du stand</button>
-    <button type="button" class="btn btn-block btn-danger" (click)="delete(stand)">Supprimer le stand</button>
-    <button type="button" class="btn btn-block btn-info" (click)="ajouterCroisement= stand.id">Ajouter une
-      Dispo</button>
-
-    <div class="row" *ngIf="ajouterCroisement == stand.id">
       <div class="col-sm-12 ">
-        <div *ngFor="let creneau of creneaux | orderBy:'ordre':false " class="">
-          <button *ngIf="!existInCroisements(stand.croisements, creneau.id)" type="button"
-            class="btn btn-block btn-secondary col-sm-4" (click)="ajoutCroisement(stand, creneau)">{{creneau.plage}}
-          </button>
-        </div>
+        <button type="button" class="btn btn-block btn-info" (click)="modifTypeStand == stand.id?modifTypeStand = 0:modifTypeStand= stand.id">Modifier le type</button>
       </div>
-    </div>
+      <div class="input-group col-sm-12 " *ngIf="modifTypeStand == stand.id">
+        <button type="button" class="btn btn-block" [ngClass]="{'btn-warning':stand.type == 1 }"
+          (click)="stand.type = 1; update(stand)">Sans choix</button>
+        <button type="button" class="btn btn-block" [ngClass]="{'btn-warning':stand.type == 2 }"
+          (click)="stand.type = 2; update(stand)">Activité</button>
+        <button type="button" class="btn btn-block" [ngClass]="{'btn-warning':stand.type == 3 }"
+          (click)="stand.type = 3; update(stand)">Activité à répartir</button>
+        <button type="button" class="btn btn-block" [ngClass]="{'btn-warning':stand.type == 4 }"
+          (click)="stand.type = 4; update(stand)">Activité non visible</button>
+        <button type="button" class="btn btn-block" [ngClass]="{'btn-warning':stand.type == 5 }"
+          (click)="stand.type = 5; update(stand)">Préparatifs</button>
+        <button type="button" class="btn btn-block" [ngClass]="{'btn-warning':stand.type == 6 }"
+          (click)="stand.type = 6; update(stand)">Postparatifs</button>
+      </div>
 
-    <div *ngFor="let croisement of stand.croisements | orderBy:'creneau.ordre':false">
-      <div class="row bordered">
-        <div class="input-group col-sm-10">
-          <span class="input-group-text">{{croisement.creneau.plage}}</span>
-        </div>
-        <div class="input-group col-sm-2">
-          <button type="button" class="btn btn-block btn-danger" (click)="deleteCroisement(croisement)">X</button>
-        </div>
 
-        <div class="input-group col-sm-6">
-          <span class="input-group-text">Limite : </span>
-          <input type="text" [(ngModel)]="croisement.limite" class="form-control" id="limite">
-        </div>
+      <div class="col-sm-12 ">
+        <button type="button" class="btn btn-block btn-info" (click)="ajouterCroisement == stand.id?ajouterCroisement = 0:ajouterCroisement= stand.id">Modifier les
+          creneaux</button>
+      </div>
+      <div class="row max_width" *ngIf="ajouterCroisement == stand.id">
+        <div *ngFor="let creneau of creneaux | orderBy:'ordre':false " class="col-sm-12">
+          <div class="row">
+            <div class="input-group col-sm-4">
+              <button [ngClass]="{'btn-warning':(existInCroisements(stand.croisements, creneau.id) != null)}" type="button"
+                class="btn btn-block btn-secondary " (click)="existInCroisements(stand.croisements, creneau.id) != null?deleteCroisement(existInCroisements(stand.croisements, creneau.id) ):ajoutCroisement(stand, creneau)">{{creneau.plage}}
+              </button>
+            </div>
 
-        <div class="input-group col-sm-3">
-          <button type="button" class="btn btn-block" [ngClass]="{'btn-danger':croisement.besoin}"
-            (click)="croisement.besoin = !croisement.besoin">Besoin</button>
-        </div>
 
-        <div class="input-group col-sm-3">
-          <button type="button" class="btn btn-block btn-warning" (click)="updateCroisement(croisement)">MAJ</button>
-        </div>
+              <div class="input-group col-sm-4" *ngIf="existInCroisements(stand.croisements, creneau.id) != null">
+                <input type="text" [(ngModel)]="existInCroisements(stand.croisements, creneau.id).limite"
+                  (blur)="updateCroisement(existInCroisements(stand.croisements, creneau.id), existInCroisements(stand.croisements, creneau.id).stand)" class="form-control">
+              </div>
+              <div class="input-group col-sm-4" *ngIf="existInCroisements(stand.croisements, creneau.id) != null">
+                <button type="button" class="btn btn-sm btn-block" [ngClass]="{'btn-warning':existInCroisements(stand.croisements, creneau.id).besoin}"
+                  (click)="existInCroisements(stand.croisements, creneau.id).besoin = !existInCroisements(stand.croisements, creneau.id).besoin; updateCroisement(existInCroisements(stand.croisements, creneau.id), existInCroisements(stand.croisements, creneau.id).stand)">Besoin</button>
+              </div>
 
+          </div>
+        </div>
       </div>
     </div>
   </div>
