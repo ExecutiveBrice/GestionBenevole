@@ -14,9 +14,9 @@ spring:
       auth: true
       starttls.enable: true
 logging:
-  file: /home/pi/java_gestion_benevole.log
+  file: /var/java_gestion_benevole.log
   level:
-    com.brice.corp: DEBUG
+    com.wild.corp: DEBUG
     root: WARN
     org.springframework.web: WARN
     org.hibernate: WARN
