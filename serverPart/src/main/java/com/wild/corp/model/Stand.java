@@ -37,6 +37,9 @@ public class Stand {
     @ManyToOne
     private Evenement evenement;
 
+    public Stand() {
+
+    }
 
     public Integer getId() {
         return id;

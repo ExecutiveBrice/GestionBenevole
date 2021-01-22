@@ -31,7 +31,7 @@
         </div>
         <input type="text" [(ngModel)]="stand.ordre" (blur)="update(stand)" class="form-control" id="ordre">
       </div>
-      <div class="input-group col-sm-2">
+      <div *ngIf="stand.type != 1" class="input-group col-sm-2">
         <button type="button" class="btn btn-block btn-danger" (click)="delete(stand)">X</button>
       </div>
 
@@ -49,16 +49,12 @@
         </div>
         <input type="text" [(ngModel)]="stand.bulle" (blur)="update(stand)" class="form-control" id="bulle">
       </div>
-      <div class="col-sm-12 ">
+      <div *ngIf="stand.type != 1" class="col-sm-12 ">
         <button type="button" class="btn btn-block btn-info" (click)="modifTypeStand == stand.id?modifTypeStand = 0:modifTypeStand= stand.id">Modifier le type</button>
       </div>
       <div class="input-group col-sm-12 " *ngIf="modifTypeStand == stand.id">
-        <button type="button" class="btn btn-block" [ngClass]="{'btn-warning':stand.type == 1 }"
-          (click)="stand.type = 1; update(stand)">Sans choix</button>
         <button type="button" class="btn btn-block" [ngClass]="{'btn-warning':stand.type == 2 }"
           (click)="stand.type = 2; update(stand)">Activité</button>
-        <button type="button" class="btn btn-block" [ngClass]="{'btn-warning':stand.type == 3 }"
-          (click)="stand.type = 3; update(stand)">Activité à répartir</button>
         <button type="button" class="btn btn-block" [ngClass]="{'btn-warning':stand.type == 4 }"
           (click)="stand.type = 4; update(stand)">Activité non visible</button>
         <button type="button" class="btn btn-block" [ngClass]="{'btn-warning':stand.type == 5 }"

@@ -2,7 +2,9 @@ package com.wild.corp.service;
 
 
 import com.wild.corp.model.Evenement;
+import com.wild.corp.model.Stand;
 import com.wild.corp.repositories.EvenementRepository;
+import com.wild.corp.repositories.StandRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +27,10 @@ public class EvenementServiceImpl implements EvenementService {
 
     @Autowired
     private EvenementRepository evenementRepository;
+
+    @Autowired
+    private StandService standService;
+
     @Autowired
     private Environment environment;
 
@@ -39,7 +46,15 @@ public class EvenementServiceImpl implements EvenementService {
 
         evenement.setRappel(replaceText(environment.getRequiredProperty("evenement.default.messages.rappel"), evenement));
         evenement.setRappelDate(new Date(evenement.getStartDate().getTime() - Integer.valueOf(environment.getRequiredProperty("evenement.default.recallDaysBeforeStartDate"))*24*60*60));
+
         evenementRepository.save(evenement);
+
+        Stand firstStand = new Stand();
+        firstStand.setNom("Sans Choix");
+        firstStand.setOrdre(0);
+        firstStand.setType(1);
+        standService.addStand(firstStand, evenement.getId());
+
     }
 
     String replaceText(String text, Evenement evenement){

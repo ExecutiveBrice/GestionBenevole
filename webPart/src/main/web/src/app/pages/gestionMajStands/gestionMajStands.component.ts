@@ -2,9 +2,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ValidationService, CroisementService, StandService, CreneauService, EvenementService, TransmissionService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Croisement, Stand, Creneau, Evenement } from '../../models';
+import { Croisement, Stand, Creneau } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-gestionMajStands',

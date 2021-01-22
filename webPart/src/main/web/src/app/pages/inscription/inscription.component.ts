@@ -33,7 +33,7 @@ export class InscriptionComponent implements OnInit {
   evenement: Evenement;
   subscription = new Subscription()
   params: Map<string, string>
-
+  using_address: string;
 
 
   constructor(
@@ -58,6 +58,7 @@ export class InscriptionComponent implements OnInit {
       data => {
         console.log(data)
         this.evenement = data
+        this.using_address = this.params['url'] + "/connexion/" + this.evenement.id
       });
 
     if (localStorage.getItem('user')) {
@@ -348,14 +349,14 @@ export class InscriptionComponent implements OnInit {
   }
 
   completeTemplate(text: string): string {
-    var using_address = this.params['url'] + "/connexion/" + this.evenement.id
+
 
     while (text.match("<event_name>")) {
       text = text.replace("<event_name>", this.evenement.eventName)
     }
 
     while (text.match("<using_address>")) {
-      text = text.replace("<using_address>", using_address)
+      text = text.replace("<using_address>", this.using_address)
     }
 
     return text
