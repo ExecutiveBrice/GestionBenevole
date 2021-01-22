@@ -89,8 +89,8 @@ export class CreationComponent implements OnInit {
         email.text = "Bonjour <br />";
         email.text = email.text + this.header;
         email.text = email.text + this.using;
-        email.text = email.text + "<br><br><a href=\"" + this.using + "\"><img src=\"" + this.qrcode + "\" /></a>";
-        email.text = email.text + this.managing;
+        email.text = email.text + "<br><br><a href=\"" + using_address + "\"><img src=\"" + this.qrcode + "\" /></a>";
+        email.text = email.text + "<br><br>"+this.managing;
         email.text = email.text + this.params['signature']
         console.log(email);
 

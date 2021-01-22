@@ -34,4 +34,5 @@
 * method: create-drop *création si absent*
 * auto : update *remplissage si existant*
 
-
+### super
+java -jar D:\Ionic\GestionBenevole\serverPart\target\gestion_benevole.jar --server.port=8091 --management.server.port=8191 --spring.config.location="file:///D:\Ionic\GestionBenevole\application.yml
