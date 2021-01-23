@@ -20,6 +20,8 @@ public interface CroisementService {
 
     Croisement findById(Integer croisementId);
 
+    List<Croisement> getCroisementByEvenement(Integer evenementId);
+
     List<Croisement> getCroisementByStand(Integer standId);
 
     List<Croisement> getCroisementByCreneau(Integer creneauId);

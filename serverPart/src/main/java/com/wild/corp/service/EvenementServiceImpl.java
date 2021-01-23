@@ -47,6 +47,8 @@ public class EvenementServiceImpl implements EvenementService {
         evenement.setRappel(replaceText(environment.getRequiredProperty("evenement.default.messages.rappel"), evenement));
         evenement.setRappelDate(new Date(evenement.getStartDate().getTime() - Integer.valueOf(environment.getRequiredProperty("evenement.default.recallDaysBeforeStartDate"))*24*60*60));
 
+
+
         evenementRepository.save(evenement);
 
         Stand firstStand = new Stand();

@@ -121,8 +121,8 @@ public class CroisementController {
 
     @RequestMapping(value = "/getAll", method = RequestMethod.GET)
     public ResponseEntity<List<Croisement>> getAll(@RequestParam Integer eventId) {
-        logger.debug("getAll Croisement");
-        List<Croisement> croisements = croisementService.findAll();
+        logger.debug("getAll Croisement by Evenement "+eventId);
+        List<Croisement> croisements = croisementService.getCroisementByEvenement(eventId);
 
         if(croisements.isEmpty()) {
             return new ResponseEntity(croisements, HttpStatus.NO_CONTENT);

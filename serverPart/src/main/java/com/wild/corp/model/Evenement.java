@@ -55,15 +55,15 @@ public class Evenement {
     private boolean lock;
 
     @JsonIgnore
-    @OneToMany(mappedBy="evenement" , orphanRemoval=true)
+    @OneToMany(mappedBy="evenement" , cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Benevole> benevoles;
 
     @JsonIgnore
-    @OneToMany(mappedBy="evenement" , orphanRemoval=true)
+    @OneToMany(mappedBy="evenement" , cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Creneau> creneaus;
 
     @JsonIgnore
-    @OneToMany(mappedBy="evenement" , orphanRemoval=true)
+    @OneToMany(mappedBy="evenement" , cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Stand> stands;
 
     public Integer getId() { return id; }

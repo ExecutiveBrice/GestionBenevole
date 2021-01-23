@@ -67,6 +67,15 @@ public class CroisementServiceImpl implements CroisementService {
         return croisementRepository.findByStandId(standId);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Croisement> getCroisementByEvenement(Integer evenementId){
+        return croisementRepository.findByStandEvenementId(evenementId);
+    }
+
     /**
      * {@inheritDoc}
      */

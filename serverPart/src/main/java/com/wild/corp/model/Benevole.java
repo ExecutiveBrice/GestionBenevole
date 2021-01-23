@@ -16,10 +16,10 @@ public class Benevole {
     @Column(name = "ID", nullable = false)
     private Integer id;
 
-    @Column(name = "PRENOM", nullable = false)
+    @Column(name = "PRENOM")
     private String prenom;
 
-    @Column(name = "NOM", nullable = false)
+    @Column(name = "NOM")
     private String nom;
 
     @Column(name = "TELEPHONE")
