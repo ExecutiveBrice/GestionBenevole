@@ -107,7 +107,7 @@ export class GestionComponent implements OnInit {
 
     this.standService.getAll(this.organumber).subscribe(stands => {
 
-  
+
 
 
 
@@ -119,19 +119,20 @@ export class GestionComponent implements OnInit {
         promises.push(new Promise((resolve, reject) => {
           this.croisementService.getByStand(stand.id).subscribe(croisements => {
 
-              stand.croisements = croisements
+            stand.croisements = croisements
 
 
-              let standLite = {
-                nom: "",
-                creneaux: []
-              };
-              standLite.nom = stand.nom;
-              standLite.creneaux = [];
+            let standLite = {
+              nom: "",
+              creneaux: []
+            };
+            standLite.nom = stand.nom;
+            standLite.creneaux = [];
 
-              for (let indexR = 0; indexR < 100; indexR++) {
-                let creneau = {};
+            for (let indexR = 0; indexR < 100; indexR++) {
+              let creneau = {};
 
+              if (stand.croisements.length > 0) {
                 stand.croisements.sort(function (a, b) { return a.creneau.ordre - b.creneau.ordre; })
                 for (let index = 0; index < stand.croisements.length; index++) {
                   const croisement = stand.croisements[index];
@@ -142,14 +143,15 @@ export class GestionComponent implements OnInit {
                 }
                 standLite.creneaux.push(creneau);
               }
+            }
 
-              standsLite.push(standLite)
-              resolve("Completed "+standLite.nom)
-            },
-              error => {
-                console.log('😢 Oh no!', error);
-                reject()
-              })
+            standsLite.push(standLite)
+            resolve("Completed " + standLite.nom)
+          },
+            error => {
+              console.log('😢 Oh no!', error);
+              reject()
+            })
         }))
 
       });
@@ -291,7 +293,7 @@ export class GestionComponent implements OnInit {
 
       }
 
-      
+
 
 
       this.mailService.sendMail(emailCopy)

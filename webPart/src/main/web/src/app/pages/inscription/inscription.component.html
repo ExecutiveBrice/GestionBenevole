@@ -93,7 +93,7 @@
 
 
 
-          <div class="col-sm-12 ">
+          <div *ngIf="sansChoix.length > 0" class="col-sm-12 ">
             <button type="button" class="btn btn-block btn-info" (click)="choix = 'heure'">Le stand m'est égal mais je
               suis disponible à :</button>
           </div>

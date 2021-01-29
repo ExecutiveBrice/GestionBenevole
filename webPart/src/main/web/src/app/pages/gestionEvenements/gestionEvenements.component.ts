@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import { ValidationService, TransmissionService, EvenementService } from '../../services';
+import { ValidationService, TransmissionService, EvenementService, ConfigService } from '../../services';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Evenement } from '../../models';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -17,6 +17,7 @@ export class GestionEvenementsComponent implements OnInit {
   organumber: number;
   evenements: Evenement[];
   choix:number;
+  params: Map<string,string>
 
 
   constructor(
@@ -24,19 +25,32 @@ export class GestionEvenementsComponent implements OnInit {
     public router: Router,
     public evenementService: EvenementService,
     public transmissionService: TransmissionService,
-
+    public configService:ConfigService,
     public validationService: ValidationService,
     public sanitizer: DomSanitizer) {
 
     }
 
   ngOnInit() {
+    this.params = JSON.parse(localStorage.getItem('allParams'));
     this.validationService.testGestion(0)
 
     this.evenements = [];
     this.getAllEvenements();
 
+
+
   }
+
+
+  goToGestion(evenement:Evenement){
+
+
+    this.router.navigate(['/gestion/' + evenement.id]);
+
+  }
+
+
 
 
   choixEvenement(id: number) {
